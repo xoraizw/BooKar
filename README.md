@@ -46,3 +46,13 @@ Make sure to follow the installation guides for each package to ensure proper se
 # License
 
 This project is licensed under the MIT License.
+
+# Contribution Breakdowns
+
+# Sprint 1:
+- Ahmad Xoraiz Waheed: Testing, Integration of all workflows, Pushing final Integration Main branch
+- AbdulHaseeb Khan: User Email Verification Workflow, Sign Up Integration, DB Setup 
+- Murtaza Ur Rehman: Sign Up Workflow Implementation
+- Ahsan Mir: Testing, Loading Screen Implementation, Integration with Login Workflow, ReadME
+- Aazen Saleem: Login Workflow Implementation, DB Setup 
+
