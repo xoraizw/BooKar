@@ -4,14 +4,22 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
 
-
 import LoadingScreen from './src/screens/LoadingScreen';
 import Login from './src/screens/Login';
-import SignupScreen from './src/screens/screen1';
-import Screen2 from './src/screens/screen2';
-import Screen3 from './src/screens/screen3';
+
+import UserType from './src/screens/UserType';
+import SignUp1 from './src/screens/SignUp1';
+import SignUp2 from './src/screens/SignUp2';
+
+import Search from './src/screens/Search';
+
 import Verification from './src/screens/Verification';
 import HomePage from './src/screens/Homepage';
+
+import RecentlyBooked from './src/screens/RecentlyBooked';
+import UserProfile from './src/screens/UserProfile';
+
+import Booking from './src/screens/BookSlot'
 
 const Stack = createNativeStackNavigator();
 
@@ -20,7 +28,6 @@ const fetchFonts = () => {
     'Montserrat-Regular': require('./assets/fonts/Montserrat-Regular.ttf'),
     'Urbanist-Medium': require('./assets/fonts/Urbanist-Medium.ttf'),
     'Urbanist-Bold': require('./assets/fonts/Urbanist-Bold.ttf'),
-    // Load other fonts here
   });
 };
 
@@ -41,6 +48,11 @@ export default function App() {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen
+          name="Booking"
+          component={Booking}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="Loading"
           component={LoadingScreen}
           options={{ headerShown: false }}
@@ -51,18 +63,18 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen 
-          name="Signup" 
-          component={SignupScreen} 
+          name="UserType" 
+          component={UserType} 
           options={{ headerShown: false }} 
         />
         <Stack.Screen 
-          name="Screen2" 
-          component={Screen2}  
+          name="SignUp1" 
+          component={SignUp1}  
           options={{ headerShown: false }}
         />
         <Stack.Screen 
-          name="Screen3" 
-          component={Screen3} 
+          name="SignUp2" 
+          component={SignUp2} 
           options={{ headerShown: false }}
         />
         <Stack.Screen 
@@ -75,6 +87,21 @@ export default function App() {
           component={HomePage} 
           options={{ headerShown: false }}
         />
+        <Stack.Screen 
+          name="Search" 
+          component={Search} 
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="RecentlyBooked"
+          component={RecentlyBooked}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UserProfile"
+          component={UserProfile}
+          options={{ headerShown: false }}
+          />
       </Stack.Navigator>
     </NavigationContainer>
   );
