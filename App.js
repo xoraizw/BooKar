@@ -20,6 +20,7 @@ import RecentlyBooked from './src/screens/RecentlyBooked';
 import UserProfile from './src/screens/UserProfile';
 
 import Booking from './src/screens/BookSlot'
+import MapScreen from './src/screens/mapScreen'
 
 const Stack = createNativeStackNavigator();
 
