@@ -167,20 +167,40 @@ app.get('/get-companies', async (req, res) =>
     }
 });
 
-// app.get('/my-bookings', async (req, res) => 
-// {
-//   const fieldValue = req.query.field;
-//   try 
-//   {
-//     const bookings = await Booking.find();
-//     res.json(bookings);
-//   } 
-//   catch (error)
-//   {
-//     console.error('Error fetching bookings:', error.message);
-//     res.status(500).json({ error: 'Internal server error' });
-//   }
-// });
+app.get('/already-booked', async (req, res) => {
+  const { company, field } = req.query;
+  try {
+    // console.log("company: ", company)
+    // console.log("field: ", field)
+    // Find bookings based on Company_Name and Field_Name
+    const bookings = await Booking.find({ Company_Name: company, Field_Name: field });
+    // console.log(bookings)
+
+    // Extract Already_Booked arrays from bookings
+    const alreadyBookedArrays = bookings.map(booking => booking.Already_Booked);
+    // Combine arrays into one array
+    const combinedBookedSlots = alreadyBookedArrays.flat();
+    // console.log(combinedBookedSlots)
+    res.json(combinedBookedSlots);
+  } catch (error) {
+    console.error('Error fetching bookings:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+app.get('/open-hours', async (req, res) => {
+  const { company, field } = req.query;
+  try {
+    // Find bookings based on Company_Name and Field_Name
+    const bookings = await Booking.findOne({ Company_Name: company, Field_Name: field });
+    // res.json(bookings)
+    res.json(bookings.Open_Hours);
+    
+  } catch (error) {
+    console.error('Error fetching bookings:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 app.get('/my-bookings', async (req, res) => 
 {
   const email = req.query.userEmail;

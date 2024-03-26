@@ -13,13 +13,16 @@ import SignUp2 from './src/screens/SignUp2';
 
 import Search from './src/screens/Search';
 
+import EditProfile from './src/screens/EditProfile';
+// import FieldProfile from './src/screens/FieldProfile';
+
 import Verification from './src/screens/Verification';
 import HomePage from './src/screens/Homepage';
 
-import EditProfile from './src/screens/EditProfile';
-
 import RecentlyBooked from './src/screens/RecentlyBooked';
 import UserProfile from './src/screens/UserProfile';
+
+import Booking from './src/screens/BookSlot'
 
 const Stack = createNativeStackNavigator();
 
@@ -93,6 +96,11 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="Booking"
+          component={Booking}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="UserProfile"
           component={UserProfile}
           options={{ headerShown: false }}
@@ -101,7 +109,7 @@ export default function App() {
           name="EditProfile"
           component={EditProfile}
           options={{ headerShown: false }}
-        />
+          />
       </Stack.Navigator>
     </NavigationContainer>
   );
