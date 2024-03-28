@@ -38,7 +38,7 @@ const SearchScreen = ({ route, navigation }) => {
         setFields([]); // Clear fields if searchQuery is empty
         return;
       }
-      const response = await fetch(`http://192.168.100.15:3000/search-fields?field=${searchQuery}`);
+      const response = await fetch(`http://10.130.42.94:3000/search-fields?field=${searchQuery}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }

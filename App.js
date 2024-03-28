@@ -13,6 +13,9 @@ import SignUp2 from './src/screens/SignUp2';
 
 import Search from './src/screens/Search';
 
+import EditProfile from './src/screens/EditProfile';
+import FieldProfile from './src/screens/FieldProfile';
+
 import Verification from './src/screens/Verification';
 import HomePage from './src/screens/Homepage';
 
@@ -20,7 +23,8 @@ import RecentlyBooked from './src/screens/RecentlyBooked';
 import UserProfile from './src/screens/UserProfile';
 
 import Booking from './src/screens/BookSlot'
-import MapScreen from './src/screens/mapScreen'
+import SelectField from './src/screens/SelectField'
+import Payment from './src/screens/Payment'
 
 const Stack = createNativeStackNavigator();
 
@@ -48,11 +52,6 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="Booking"
-          component={Booking}
-          options={{ headerShown: false }}
-        />
         <Stack.Screen
           name="Loading"
           component={LoadingScreen}
@@ -99,8 +98,33 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
+          name="Booking"
+          component={Booking}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
           name="UserProfile"
           component={UserProfile}
+          options={{ headerShown: false }}
+          />
+        <Stack.Screen
+          name="EditProfile"
+          component={EditProfile}
+          options={{ headerShown: false }}
+          />
+        <Stack.Screen
+          name="FieldProfile"
+          component={FieldProfile}
+          options={{ headerShown: false }}
+          />
+        <Stack.Screen
+          name="SelectField"
+          component={SelectField}
+          options={{ headerShown: false }}
+          />
+        <Stack.Screen
+          name="Payment"
+          component={Payment}
           options={{ headerShown: false }}
           />
       </Stack.Navigator>

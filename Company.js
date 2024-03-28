@@ -6,7 +6,8 @@ const companySchema = new mongoose.Schema({
     Location: String,
     Contact_Name: String,
     Email: String,
-    Website_URL: String
-  });
+    Website_URL: String,
+    Image: Buffer // Store image data as a buffer
+});
 
 module.exports = mongoose.model('Company', companySchema);

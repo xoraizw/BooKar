@@ -28,7 +28,9 @@ const TimePicker = ({ selectedValue, onValueChange, visible, onClose, availableT
   );
 };
 
-const CalendarComponent = () => {
+const CalendarComponent = ({route, navigation}) => {
+  const { fieldChosen, companyEmail, companyName, bookingUser} = route.params;
+
   const [loaded] = useFonts({
     UrbanistRegular: require('../../assets/fonts/Urbanist/static/Urbanist-Regular.ttf'),
     UrbanistBold: require('../../assets/fonts/Urbanist/static/Urbanist-SemiBold.ttf'),
@@ -54,44 +56,7 @@ const CalendarComponent = () => {
   const [currentHour, setCurrentHour] = useState('');
   const [openHours, setOpenHours] = useState('');
 
-  const fieldEX = "Indoor court";
-  const companyEX = "5th gen";
   const pricePerHour = 2000;
-
-  useEffect(() => {
-    getBookings();
-    getOpenHours();
-  }, []);
-
-  const getBookings = async () => {
-    try {
-      const response = await fetch(`http://192.168.100.15:3000/already-booked?field=${fieldEX}&company=${companyEX}`);
-      const data = await response.json(); // Parse the JSON response
-      if (data) {
-        setBookedTimeSlots(data); // Set the parsed data to bookedTimeSlots
-      } else {
-        setBookedTimeSlots([]);
-      }
-    } catch (error) {
-      console.error('Error fetching booked time slots:', error.message);
-    }
-  };
-
-  const getOpenHours = async () => {
-    try {
-      const response = await fetch(`http://192.168.100.15:3000/open-hours?field=${fieldEX}&company=${companyEX}`);
-      const data = await response.json(); // Parse the JSON response
-      if (data) {
-        setOpenHours(data); // Set the parsed data to openHours
-      } else {
-        console.log("No open hours");
-        setOpenHours(""); // Set openHours to empty string or whatever default value you want
-      }
-    } catch (error) {
-      console.error('Error fetching open hours:', error.message);
-    }
-  };
-
 
   const generateTimeSlots = (openHours, selectedCheckOutTime, alreadyBooked) => {
     const [open, close] = openHours.split('-');
@@ -154,26 +119,10 @@ const CalendarComponent = () => {
     return momentArray.filter(momentStr => moment(momentStr, 'YYYY-MM-DD HH:mm').isAfter(currentDate));
   };
 
-
-  
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     await Promise.all([getBookings(), getOpenHours()]);
-  //     // After both fetching functions are complete, generate the time slots
-  //     const generatedTimeSlots = generateTimeSlots(openHours, checkOutTime, removePastBookings(bookedTimeSlots));
-  //     setCurrentHour(moment().format('HH:mm'));
-  //     setAvailableTimeSlots(generatedTimeSlots);
-  //   };
-  
-  //   fetchData();
-  // }, [checkOutTime]);
-  
   useEffect(() => {
-    const generatedTimeSlots = generateTimeSlots(openHours, checkOutTime, removePastBookings(bookedTimeSlots));
+    const generatedTimeSlots = generateTimeSlots(fieldChosen.Open_Hours, checkOutTime, removePastBookings(fieldChosen.Already_Booked));
     setCurrentHour(moment().format('HH:mm'));
-    setAvailableTimeSlots(generatedTimeSlots);
-    // setAvailableTimeSlots(generatedTimeSlots.filter(slot => slot > moment().format('HH:mm')));
-    console.log("checkin time slots useEffect: ", availableTimeSlots)
+    setAvailableTimeSlots(generatedTimeSlots.filter(slot => slot > moment().format('HH:mm')));
   }, [checkOutTime]);
 
   useEffect(() => {
@@ -192,7 +141,7 @@ const CalendarComponent = () => {
       }
   
       // Check if any of the hours in range are already booked
-      const isAnyHourBooked = hoursInRange.some(hour => bookedTimeSlots.includes(hour));
+      const isAnyHourBooked = hoursInRange.some(hour => fieldChosen.Already_Booked.includes(hour));
   
       if (isAnyHourBooked) {
         setErrorModalVisible(true); // Show the error modal
@@ -202,7 +151,9 @@ const CalendarComponent = () => {
         setContinueButtonVisible(true); // Show the continue button
       }
     }
-  }, [checkInTime, checkOutTime, bookedTimeSlots]);
+  }, [checkInTime, checkOutTime, fieldChosen.Already_Booked]);
+   // Include bookedTimeSlots in the dependencies array
+
 
   if (!loaded) {
     // Return a loading indicator or null if fonts are not loaded yet
@@ -289,14 +240,21 @@ const CalendarComponent = () => {
   
   
   const ContinueButton = () => {
-    const handleContinue = () => {
-      console.log("Checkin time: ", checkInTime)
-      console.log("Checkout time: ", checkOutTime)
-      console.log("Array generated: ", generateHourlySlots(checkInTime, checkOutTime))
-    };
+    
+    // const handleContinue = () => {
+    //   console.log("Checkin time: ", checkInTime)
+    //   console.log("Checkout time: ", checkOutTime)
+    //   console.log("Array generated: ", generateHourlySlots(checkInTime, checkOutTime))
+    //   navigation.navigate('Payment');
+    // };
+    
 
     return (
-      <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
+      <TouchableOpacity style={styles.continueButton}
+      onPress={() => {
+        navigation.navigate('Payment');
+      }}
+      >
         <Text style={styles.continueButtonText}>Continue</Text>
       </TouchableOpacity>
     );
@@ -314,8 +272,8 @@ const CalendarComponent = () => {
         <View style={styles.calendar}>
           <Calendar
             current={selectedDate}
-            minDate={new Date().toString()} // Set minimum date to today
-            maxDate={new Date().toString()} // Set maximum date to selectedDate
+            minDate={new Date().toDateString()} // Set minimum date to today
+            maxDate={new Date().toDateString()} // Set maximum date to selectedDate
             onDayPress={onDayPress}
             markingType={'custom'}
             markedDates={{
@@ -364,6 +322,7 @@ const CalendarComponent = () => {
         </View>
       </View>
 
+            
       <TimePicker
         visible={showCheckInPicker}
         selectedValue={checkInTime}
@@ -382,7 +341,7 @@ const CalendarComponent = () => {
 
       {checkInTime && checkOutTime && continueButtonVisible && (
         <View style={styles.guestsContainer}>
-          <Text style={styles.guestsText}>Total amount: {timeDifference.toFixed(2) * pricePerHour} PKR</Text>
+          <Text style={styles.guestsText}>Total amount: {timeDifference.toFixed(2) * fieldChosen.Rate} PKR</Text>
         </View>
       )}
 
@@ -397,17 +356,10 @@ const CalendarComponent = () => {
         </View>
       </Modal>
 
-
       {continueButtonVisible && <ContinueButton />}
+
     </SafeAreaView>
   );
 };
 
 export default CalendarComponent;
-
-// Fetch alreadyBooked array (array of moment objects) from DB
-// apply removePastBookings and get new updated array of alreadyBooked time slots
-// render available times with this array => const generateTimeSlots = (openHours, selectedCheckOutTime, alreadyBooked)
-// select checkInTime, checkOutTime, selectedDate & create a moment array with it using makeCurrentBookingArray.
-// move this array onto payments page.
-// The attributes below will be fetched from DB.
