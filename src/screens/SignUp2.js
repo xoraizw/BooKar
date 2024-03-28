@@ -19,7 +19,7 @@ const Screen3 = ({ navigation }) => {
     } else {
       setErrorMessage(''); // Clear error message if validation passes
       // Assuming your server endpoint for posting user information is '/signup'
-      fetch('http://192.168.100.15:3000/create-profile', {
+      fetch('http://10.130.42.94:3000/create-profile', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

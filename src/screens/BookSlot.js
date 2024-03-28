@@ -28,7 +28,9 @@ const TimePicker = ({ selectedValue, onValueChange, visible, onClose, availableT
   );
 };
 
-const CalendarComponent = () => {
+const CalendarComponent = ({route, navigation}) => {
+  const { fieldChosen, companyEmail, companyName, bookingUser} = route.params;
+
   const [loaded] = useFonts({
     UrbanistRegular: require('../../assets/fonts/Urbanist/static/Urbanist-Regular.ttf'),
     UrbanistBold: require('../../assets/fonts/Urbanist/static/Urbanist-SemiBold.ttf'),
@@ -54,45 +56,7 @@ const CalendarComponent = () => {
   const [currentHour, setCurrentHour] = useState('');
   const [openHours, setOpenHours] = useState('');
 
-  useEffect(() => {
-    getBookings();
-    getOpenHours();
-  }, []);
-
-
-  const fieldEX = "Indoor court";
-  const companyEX = "5th gen";
   const pricePerHour = 2000;
-
-  const getBookings = async () => {
-    try {
-      const response = await fetch(`http://172.29.96.1:3000/already-booked?field=${fieldEX}&company=${companyEX}`);
-      const data = await response.json(); // Parse the JSON response
-      if (data) {
-        setBookedTimeSlots(data); // Set the parsed data to bookedTimeSlots
-      } else {
-        setBookedTimeSlots([]);
-      }
-    } catch (error) {
-      console.error('Error fetching booked time slots:', error.message);
-    }
-  };
-
-  const getOpenHours = async () => {
-    try {
-      const response = await fetch(`http://172.29.96.1:3000/open-hours?field=${fieldEX}&company=${companyEX}`);
-      const data = await response.json(); // Parse the JSON response
-      if (data) {
-        setOpenHours(data); // Set the parsed data to openHours
-      } else {
-        console.log("No open hours");
-        setOpenHours(""); // Set openHours to empty string or whatever default value you want
-      }
-    } catch (error) {
-      console.error('Error fetching open hours:', error.message);
-    }
-  };
-
 
   const generateTimeSlots = (openHours, selectedCheckOutTime, alreadyBooked) => {
     const [open, close] = openHours.split('-');
@@ -156,7 +120,7 @@ const CalendarComponent = () => {
   };
 
   useEffect(() => {
-    const generatedTimeSlots = generateTimeSlots(openHours, checkOutTime, removePastBookings(bookedTimeSlots));
+    const generatedTimeSlots = generateTimeSlots(fieldChosen.Open_Hours, checkOutTime, removePastBookings(fieldChosen.Already_Booked));
     setCurrentHour(moment().format('HH:mm'));
     setAvailableTimeSlots(generatedTimeSlots.filter(slot => slot > moment().format('HH:mm')));
   }, [checkOutTime]);
@@ -177,7 +141,7 @@ const CalendarComponent = () => {
       }
   
       // Check if any of the hours in range are already booked
-      const isAnyHourBooked = hoursInRange.some(hour => bookedTimeSlots.includes(hour));
+      const isAnyHourBooked = hoursInRange.some(hour => fieldChosen.Already_Booked.includes(hour));
   
       if (isAnyHourBooked) {
         setErrorModalVisible(true); // Show the error modal
@@ -187,7 +151,7 @@ const CalendarComponent = () => {
         setContinueButtonVisible(true); // Show the continue button
       }
     }
-  }, [checkInTime, checkOutTime, bookedTimeSlots]);
+  }, [checkInTime, checkOutTime, fieldChosen.Already_Booked]);
    // Include bookedTimeSlots in the dependencies array
 
 
@@ -276,14 +240,21 @@ const CalendarComponent = () => {
   
   
   const ContinueButton = () => {
-    const handleContinue = () => {
-      console.log("Checkin time: ", checkInTime)
-      console.log("Checkout time: ", checkOutTime)
-      console.log("Array generated: ", generateHourlySlots(checkInTime, checkOutTime))
-    };
+    
+    // const handleContinue = () => {
+    //   console.log("Checkin time: ", checkInTime)
+    //   console.log("Checkout time: ", checkOutTime)
+    //   console.log("Array generated: ", generateHourlySlots(checkInTime, checkOutTime))
+    //   navigation.navigate('Payment');
+    // };
+    
 
     return (
-      <TouchableOpacity onPress={handleContinue} style={styles.continueButton}>
+      <TouchableOpacity style={styles.continueButton}
+      onPress={() => {
+        navigation.navigate('Payment');
+      }}
+      >
         <Text style={styles.continueButtonText}>Continue</Text>
       </TouchableOpacity>
     );
@@ -370,7 +341,7 @@ const CalendarComponent = () => {
 
       {checkInTime && checkOutTime && continueButtonVisible && (
         <View style={styles.guestsContainer}>
-          <Text style={styles.guestsText}>Total amount: {timeDifference.toFixed(2) * pricePerHour} PKR</Text>
+          <Text style={styles.guestsText}>Total amount: {timeDifference.toFixed(2) * fieldChosen.Rate} PKR</Text>
         </View>
       )}
 
@@ -385,17 +356,10 @@ const CalendarComponent = () => {
         </View>
       </Modal>
 
-
       {continueButtonVisible && <ContinueButton />}
+
     </SafeAreaView>
   );
 };
 
 export default CalendarComponent;
-
-// Fetch alreadyBooked array (array of moment objects) from DB
-// apply removePastBookings and get new updated array of alreadyBooked time slots
-// render available times with this array => const generateTimeSlots = (openHours, selectedCheckOutTime, alreadyBooked)
-// select checkInTime, checkOutTime, selectedDate & create a moment array with it using makeCurrentBookingArray.
-// move this array onto payments page.
-// The attributes below will be fetched from DB.

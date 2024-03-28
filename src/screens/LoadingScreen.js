@@ -35,7 +35,7 @@ const LoadingScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+      <Image source={require('../../assets/images/Logo.png')} style={styles.logo} />
       <Animated.View
         style={[
           styles.loadingLine,

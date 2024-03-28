@@ -30,7 +30,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://172.29.96.1:3000/signin', {
+      const response = await fetch('http://10.130.42.94:3000/signin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

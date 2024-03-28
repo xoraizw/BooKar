@@ -1,21 +1,21 @@
-import moment from 'moment';
 
-function makeCurrentBookingArray(checkInTime, checkOutTime, date) {
-    const startTime = moment(`${date} ${checkInTime}`, 'YYYY-MM-DD HH:mm');
-    const endTime = moment(`${date} ${checkOutTime}`, 'YYYY-MM-DD HH:mm');
-    const momentArray = [];
-  
-    // Loop from check-in time to check-out time and add each moment to the array
-    while (startTime.isBefore(endTime)) {
-      momentArray.push(startTime.clone());
-      startTime.add(1, 'hour'); // Increment by 1 hour
-    }
-  
-    return momentArray;
-  }
+_id
+65feb146f93612d95a8be3c3
+Company_ID
+2
+Company_Name
+"5th Gen"
+Location
+"Phase 6"
+Contact_Name
+"Irfan Bhai"
+Email
+"fifthgen@example.com"
+Website_URL
+"https://www.fifth.com"
+Image
+Binary.createFromBase64('iVBORw0KGgoAAAANSUhEUgAABBoAAAKjCAIAAAA8q/uPAAAACXBIWXMAAA7zAAAO8wEcU5k6AAAAEXRFWHRUaXRsZQBQREYgQ3Jl…', 0)
+__v
+0
 
-const openHours = '11:00-03:00';
-const pricePerHour = 2000;
-const alreadyBooked = ["11:00", "16:00", "17:00", "18:00"]
-
-console.log(makeCurrentBookingArray(checkInTime,checkOutTime,selectedDate))
+PREVIOUS

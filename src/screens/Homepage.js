@@ -39,7 +39,7 @@ export default function HomePage({ route, navigation }) {
 
   const userDetails = async () => {
     try {
-      const response = await fetch(`http://172.29.96.1:3000/get-user?userEmail=${emailProp}`);
+      const response = await fetch(`http://10.130.42.94:3000/get-user?userEmail=${emailProp}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -52,7 +52,7 @@ export default function HomePage({ route, navigation }) {
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch('http://172.29.96.1:3000/get-companies');
+      const response = await fetch('http://10.130.42.94:3000/get-companies');
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -82,7 +82,7 @@ export default function HomePage({ route, navigation }) {
         <ScrollView contentContainerStyle={styles.container}>
           <View style={styles.header}>
             <View style={styles.logoContainer}>
-              <Image source={require('../../assets/images/logo.png')} style={styles.logo} />
+              <Image source={require('../../assets/images/Logo.png')} style={styles.logo} />
               <Text style={styles.logoText}>BookKar</Text>
             </View>
             <TouchableOpacity onPress={() => {}}>
@@ -158,10 +158,18 @@ export default function HomePage({ route, navigation }) {
                 location={company.Location}
                 price={company.Email}
                 rating={company.Contact_Name}
+                navigation={navigation} 
+                
                 onPress={() => {
-                  // Handle click for first image
-                }}
-              />
+                 navigation.navigate('FieldProfile', {
+                      companyName: company.Company_Name,
+                      companyLocation: company.Location,
+                      companyEmail: company.Email,
+                      companyContactName: company.Contact_Name,
+                      email: emailProp,    
+                      currentUser: user                  
+                  });}}
+                  />
             );
           })}
 

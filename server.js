@@ -6,6 +6,8 @@ const bodyParser = require('body-parser');
 const User = require('./User');
 const Company = require('./Company');
 const Booking = require('./Booking');
+const Review = require('./Reviews');
+const Field = require('./Field');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -52,8 +54,6 @@ app.post('/signin', async (req, res) => {
       res.status(500).json({ error: error.message });
     }
   });
-
-
 
 app.post('/signup', async (req, res) => {
   console.log('Fetching data from: signup');
@@ -147,6 +147,28 @@ app.post('/change-password', async (req, res) => {
   }
 });
 
+app.post('/addreview', async (req, res) => {
+  try {
+    // Extract data from the request body
+    const { Rating, UserName, CompanyEmailGiven, Comments } = req.body;
+
+    // Create a new review document
+    const newReview = new Review({
+      Rating,
+      UserName,
+      CompanyEmailGiven,
+      Comments
+    });
+
+    // Save the new review to the database
+    await newReview.save();
+
+    res.status(201).json({ message: 'Review added successfully!' });
+  } catch (error) {
+    console.error('Error while adding review:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 ////////// Get requests //////////
 app.get("/", async (req,res) => {
@@ -187,6 +209,7 @@ app.get('/already-booked', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 app.get('/open-hours', async (req, res) => {
   const { company, field } = req.query;
   try {
@@ -236,6 +259,17 @@ app.get('/get-user', async (req, res) => {
     res.json(user);
   } catch (error) {
     console.error('Error searching for companies:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/company-fields', async (req, res) => {
+  const companyEmail = req.query.companyEmail;
+  try {
+    const fields = await Field.find({ Company_Email: companyEmail });
+    res.json(fields);
+  } catch (error) {
+    console.error('Error fetching fields by company email:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
