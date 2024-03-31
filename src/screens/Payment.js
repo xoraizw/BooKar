@@ -4,12 +4,14 @@ import { MaterialIcons } from '@expo/vector-icons'; // Assuming we're using Expo
 import { Image, Modal } from 'react-native';
 import { useNavigation } from '@react-navigation/native'; // Assuming you're using react-navigation
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {ToastContainer, toast} from 'react-toastify'
 // import Modal from 'react-native-modal';
 import { set } from 'mongoose';
 import { styles } from '../../assets/styles/paymentStyles'
 
 const PaymentScreen = ({route}) => {
-  
+  const {field, company_email, company_name, user, email_prop, location, contact_name, user_email, booking} = route.params
+  console.log("Booking: ", booking)
   const [selectedPayment, setSelectedPayment] = useState(null);
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
@@ -18,6 +20,8 @@ const PaymentScreen = ({route}) => {
   const handlePaymentMethodsPress = () => {
     // Logic to handle Payment Methods press
   };
+
+  const notify = () => toast("Time slot booked.")
 
   const handleAddNewCardPress = () => {
     // Logic to handle Add New Card press

@@ -1,21 +1,56 @@
+const OngoingBookingsCard = ({ venueName, bookingTime}) => {
+    return (
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Image source={img} style={styles.cardImage} />
+          <View style={styles.cardTextContent}>
+            <Text style={styles.venueName}>{venueName}</Text>
+            <Text style={styles.bookingTime}>{bookingTime}</Text>
+            <View style={styles.paidContainer}>
+              <Text style={styles.paidText}>Paid</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.line} />
+      </View>
+    );
+  };
 
-_id
-65feb146f93612d95a8be3c3
-Company_ID
-2
-Company_Name
-"5th Gen"
-Location
-"Phase 6"
-Contact_Name
-"Irfan Bhai"
-Email
-"fifthgen@example.com"
-Website_URL
-"https://www.fifth.com"
-Image
-Binary.createFromBase64('iVBORw0KGgoAAAANSUhEUgAABBoAAAKjCAIAAAA8q/uPAAAACXBIWXMAAA7zAAAO8wEcU5k6AAAAEXRFWHRUaXRsZQBQREYgQ3Jl…', 0)
-__v
-0
+  const CanceledBookingsCard = ({ venueName, bookingTime}) => {
+    return (
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Image source={img} style={styles.cardImage} />
+          <View style={styles.cardTextContent}>
+            <Text style={styles.venueName}>{venueName}</Text>
+            <Text style={styles.bookingTime}>{bookingTime}</Text>
+            <View style={[styles.tagContainer, styles.refundedTag]}>
+              <Text style={styles.tagText}>Canceled & Refunded</Text>
+            </View>
+          </View>
+        </View>
+        <View style={styles.line} />
+        <View style={styles.bottomTagContainer}>
+          <Ionicons name="alert-circle-outline" size={24} color="#FF7878" />
+          <Text style={styles.bottomTagText}>You canceled this booking</Text>
+        </View>
+      </View>
+    );
+  };
 
-PREVIOUS
+  const CompletedBookingsCard = ({ venueName, bookingTime}) => {
+    return (
+      <View style={styles.card}>
+        <View style={styles.row}>
+          <Image source={img} style={styles.cardImage} />
+          <View style={styles.cardTextContent}>
+            <Text style={styles.venueName}>{venueName}</Text>
+            <Text style={styles.bookingTime}>{bookingTime}</Text>
+            <View style={[styles.tagContainer, styles.completedTag]}>
+              <Text style={styles.completedTagText}>Completed</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  };

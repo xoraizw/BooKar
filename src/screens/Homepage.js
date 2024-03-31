@@ -9,6 +9,7 @@ import { Buffer } from 'buffer';
 
 export default function HomePage({ route, navigation }) {
   const { emailProp } = route.params;
+  console.log("hOME PAGe route: ", emailProp)
   const [selectedPill, setSelectedPill] = useState('Recommended');
   const [selectedTab, setSelectedTab] = useState('home');
   const [loaded] = useFonts({
@@ -39,7 +40,7 @@ export default function HomePage({ route, navigation }) {
 
   const userDetails = async () => {
     try {
-      const response = await fetch(`http://10.130.42.94:3000/get-user?userEmail=${emailProp}`);
+      const response = await fetch(`http://192.168.100.15:3000/get-user?userEmail=${emailProp}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -52,7 +53,7 @@ export default function HomePage({ route, navigation }) {
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch('http://10.130.42.94:3000/get-companies');
+      const response = await fetch('http://192.168.100.15:3000/get-companies');
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -85,7 +86,12 @@ export default function HomePage({ route, navigation }) {
               <Image source={require('../../assets/images/Logo.png')} style={styles.logo} />
               <Text style={styles.logoText}>BookKar</Text>
             </View>
-            <TouchableOpacity onPress={() => {}}>
+            <TouchableOpacity onPress={() => {
+              // handleTabPress('Notifications');
+              navigation.navigate('Notifications', {
+                email: emailProp,
+              });
+            }}>
               <Image source={require('../../assets/images/notification_bell.png')} style={styles.notificationBell} />
             </TouchableOpacity>
           </View>
@@ -95,14 +101,14 @@ export default function HomePage({ route, navigation }) {
             onPress={() => {
               handleTabPress('search');
               navigation.navigate('Search', {
-                email: emailProp,
+                emailPassed: emailProp,
               });
             }}
           >
             <View style={styles.searchContainer} onPress={() => {
               handleTabPress('search');
               navigation.navigate('Search', {
-                email: emailProp,
+                emailPassed: emailProp,
               });
             }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -216,7 +222,7 @@ export default function HomePage({ route, navigation }) {
             handleTabPress('search');
             navigation.navigate('Search');
             navigation.navigate('Search', {
-              email: emailProp,
+              emailPassed: emailProp,
             }); // Navigate to the Search page
           }}
         >
@@ -229,7 +235,12 @@ export default function HomePage({ route, navigation }) {
         </TouchableOpacity>
         <TouchableOpacity
           style={selectedTab === 'list' ? styles.navbarTabSelected : styles.navbarTab}
-          onPress={() => handleTabPress('list')}
+          onPress={() => {
+            handleTabPress('list');
+            // navigation.navigate('UserProfile');
+            navigation.navigate('MyBookings', {
+              email: emailProp
+            })}} // Navigate to the Search page
         >
           <Ionicons
             name={selectedTab === 'list' ? 'list' : 'list-outline'}

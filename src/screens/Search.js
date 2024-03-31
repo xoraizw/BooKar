@@ -1,12 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TextInput, FlatList, Text, ScrollView, TouchableOpacity, Image} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { styles } from '../../assets/styles/searchStyles'
 
 const SearchScreen = ({ route, navigation }) => {
-  const [selectedPill, setSelectedPill] = useState('Recommended');
   const [selectedTab, setSelectedTab] = useState('search');
+  const [user, setUser] = useState(null);
+
   const [loaded] = useFonts({
     UrbanistRegular: require('../../assets/fonts/Urbanist/static/Urbanist-Regular.ttf'),
     UrbanistBold: require('../../assets/fonts/Urbanist/static/Urbanist-SemiBold.ttf'),
@@ -17,9 +18,21 @@ const SearchScreen = ({ route, navigation }) => {
     MontserratSemiBold: require('../../assets/fonts/Montserrat/static/Montserrat-SemiBold.ttf'),
   });
 
-  const handlePillPress = (pill) => {
-    setSelectedPill(pill);
+  const userDetails = async () => {
+    try {
+      const response = await fetch(`http://192.168.100.15:3000/get-user?userEmail=${route.params.emailPassed}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setUser(data);
+    } catch (error) {
+      console.error('Error fetching user details:', error);
+    }
   };
+  useEffect(() => {
+    userDetails();
+    }, []);
 
   const handleTabPress = (tabName) => {
     if (tabName === selectedTab) {
@@ -38,7 +51,7 @@ const SearchScreen = ({ route, navigation }) => {
         setFields([]); // Clear fields if searchQuery is empty
         return;
       }
-      const response = await fetch(`http://10.130.42.94:3000/search-fields?field=${searchQuery}`);
+      const response = await fetch(`http://192.168.100.15:3000/search-fields?field=${searchQuery}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -48,11 +61,20 @@ const SearchScreen = ({ route, navigation }) => {
       console.error('Error fetching fields:', error);
     }
   };
-  const handleArenaCardPress = () => {
-    // Define the function logic here
+
+  const handleArenaCardPress = (company) => {
+    navigation.navigate('FieldProfile', {
+      companyName: company.Company_Name,
+      companyLocation: company.Location,
+      companyEmail: company.Email,
+      companyContactName: company.Contact_Name,
+      email: route.params.emailPassed,    
+      currentUser: user                  
+    })
   };
 
   const renderItem = ({ item }) => {
+    // console.log("Item: ", item)
     let ratingColor = '#C4C4C4'; // Default color
     const ratingValue = parseFloat(item.rating);
     if (ratingValue >= 3.5 && ratingValue <= 5) {
@@ -64,7 +86,7 @@ const SearchScreen = ({ route, navigation }) => {
     }
 
     return (
-      <TouchableOpacity onPress={handleArenaCardPress}>
+      <TouchableOpacity onPress={() => handleArenaCardPress(item)}>
       <View style={styles.arenaCard}>
         <Image
           source={'../../assets/images/Fusion.png'}
@@ -102,34 +124,6 @@ const SearchScreen = ({ route, navigation }) => {
           value={query}
         />
       </View>
-      <ScrollView horizontal contentContainerStyle={styles.pillContainer}>
-        <PillButton
-          text="All"
-          size={{ width: 82, height: 31 }}
-          isSelected={selectedPill === 'All'}
-          onPress={() => handlePillPress('All')}
-        />
-        <PillButton
-          text="Price: Low to High"
-          size={{ width: 145, height: 31 }}
-          isSelected={selectedPill === 'Price: Low to High'}
-          onPress={() => handlePillPress('Price: Low to High')}
-        />
-        <PillButton
-          text="Football"
-          size={{ width: 77, height: 31 }}
-          isSelected={selectedPill === 'Football'}
-          onPress={() => handlePillPress('Football')}
-        />
-        <PillButton
-          text="Volleyball"
-          size={{ width: 87, height: 31 }}
-          isSelected={selectedPill === 'Volleyball'}
-          onPress={() => handlePillPress('Volleyball')}
-        />
-      </ScrollView>
-
-      {/* Arena cards */}
       <View style={styles.arenaContainer}>
         <View style={{ flex: 1, overflowY: 'scroll' }}>
           <FlatList
@@ -148,7 +142,7 @@ const SearchScreen = ({ route, navigation }) => {
           onPress= {() => {
             handleTabPress('home');
             navigation.navigate('HomePage', {
-              emailProp: route.params.email,
+              emailProp: route.params.emailPassed,
             });
           }}
         >
@@ -196,22 +190,4 @@ const SearchScreen = ({ route, navigation }) => {
     </View>
   );
 };
-
-const PillButton = ({ text, size, isSelected, onPress }) => {
-  return (
-    <TouchableOpacity
-      style={[
-        styles.pill,
-        { width: size.width, height: size.height, marginRight: 10 },
-        isSelected ? styles.selectedPill : null
-      ]}
-      onPress={onPress}
-    >
-      <Text style={[styles.pillText, isSelected ? styles.selectedPillText : null]}>{text}</Text>
-    </TouchableOpacity>
-  );
-};
-
-
-
 export default SearchScreen;

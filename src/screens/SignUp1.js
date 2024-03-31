@@ -26,7 +26,7 @@ const Screen2 = ({ navigation }) => {
     } else {
       setErrorMessage(''); // Clear error message if validation passes
       try {
-        const response = await fetch('http://10.130.42.94:3000/signup', {
+        const response = await fetch('http://192.168.100.15:3000/signup', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

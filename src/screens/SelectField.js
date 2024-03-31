@@ -4,7 +4,7 @@ import { styles } from '../../assets/styles/selectfieldStyles'
 
 
 const NewPage = ({route, navigation}) => {
-  const {email, company_name, user} = route.params
+  const {passedCompanyName, passedCompanyEmail, passedLocation, passedEmail, passedContactName, passedUserEmail, passedCurrentUser} = route.params
 
   const [modalVisibleField, setModalVisibleField] = useState(false);
 
@@ -15,7 +15,7 @@ const NewPage = ({route, navigation}) => {
 
   const getFields = async () => {
     try {
-      const response = await fetch(`http://10.130.42.94:3000/company-fields?companyEmail=${email}`);
+      const response = await fetch(`http://192.168.100.15:3000/company-fields?companyEmail=${passedCompanyEmail}`);
       const data = await response.json(); // Parse the JSON response
       if (data) {
         setFields(data); // Set the parsed data to bookedTimeSlots
@@ -32,6 +32,15 @@ const NewPage = ({route, navigation}) => {
   }, []);
 
   const handleBackPress = () => {
+    navigation.navigate('FieldProfile', {
+          companyName : passedCompanyName,
+          companyEmail : passedCompanyEmail,
+          Location : passedLocation,
+          email : passedEmail, 
+          contact_name : passedContactName, 
+          user_email : passedUserEmail, 
+          currentUser : passedCurrentUser,                
+      })
     // Add functionality for back press here
   };
 
@@ -89,20 +98,26 @@ const NewPage = ({route, navigation}) => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-      <View style={styles.bottomButtonContainer}>
-        <TouchableOpacity style={styles.continueButton}
-        onPress={() => {
-          navigation.navigate('Booking', {
-            fieldChosen: selectedField,
-            companyEmail: email,
-            companyName: company_name,
-            bookingUser: user
-          });
-        }}>
-          <Text style={styles.continueButtonText}>Continue</Text>
-        </TouchableOpacity>
+        {selectedField && 
+          <View style={styles.bottomButtonContainer}>
+            <TouchableOpacity style={styles.continueButton}
+            onPress={() => {
+              navigation.navigate('Booking', {
+                // {passedCompanyName, passedCompanyEmail, passedLocation, passedEmail, passedContactName, passedUserEmail, passedCurrentUser}
+                fieldChosen: selectedField,
+                companyEmail: passedCompanyEmail,
+                companyName: passedCompanyName,
+                bookingUser: passedCurrentUser,
+                emailProp: passedEmail,
+                locationProp: passedLocation,
+                contactNameProp: passedContactName,
+                userEmailProp: passedUserEmail
+              });
+            }}>
+              <Text style={styles.continueButtonText}>Continue</Text>
+            </TouchableOpacity>
+          </View>}
       </View>
-    </View>
   );
 };
 export default NewPage;
