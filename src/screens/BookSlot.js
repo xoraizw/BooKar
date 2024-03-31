@@ -4,6 +4,7 @@ import { Calendar } from 'react-native-calendars';
 import { useFonts } from 'expo-font';
 import moment from 'moment';
 import { styles } from '../../assets/styles/bookslotStyles';
+import Toast from 'react-native-toast-message';
 
 const TimePicker = ({ selectedValue, onValueChange, visible, onClose, availableTimeSlots }) => {
   return (
@@ -29,7 +30,38 @@ const TimePicker = ({ selectedValue, onValueChange, visible, onClose, availableT
 };
 
 const CalendarComponent = ({route, navigation}) => {
-  const { fieldChosen, companyEmail, companyName, bookingUser} = route.params;
+  const { fieldChosen, companyEmail, companyName, bookingUser, emailProp, locationProp, contactNameProp, userEmailProp} = route.params;
+
+
+  const generateHourlySlots = (checkInTime, checkOutTime) => {
+    const startTime = moment(checkInTime, 'YYYY-MM-DD HH:mm');
+    const endTime = moment(checkOutTime, 'YYYY-MM-DD HH:mm');
+    const timeSlots = [];
+  
+    // Add the check-in time
+    timeSlots.push(startTime.format('YYYY-MM-DD HH:mm'));
+  
+    // Check if the check-out time is on the same day
+    if (endTime.isSame(startTime, 'day')) {
+      let currentHour = startTime.clone().add(1, 'hour');
+      while (currentHour.isBefore(endTime)) {
+        timeSlots.push(currentHour.format('YYYY-MM-DD HH:mm'));
+        currentHour.add(1, 'hour');
+      }
+    } else {
+      // Check-out time is on the next day
+      let currentHour = startTime.clone().startOf('day').add(1, 'hour');
+      while (currentHour.isBefore(endTime)) {
+        timeSlots.push(currentHour.format('YYYY-MM-DD HH:mm'));
+        currentHour.add(1, 'hour');
+      }
+    }
+  
+    // Add the check-out time
+    timeSlots.push(endTime.format('YYYY-MM-DD HH:mm'));
+  
+    return timeSlots;
+  };
 
   const [loaded] = useFonts({
     UrbanistRegular: require('../../assets/fonts/Urbanist/static/Urbanist-Regular.ttf'),
@@ -41,22 +73,17 @@ const CalendarComponent = ({route, navigation}) => {
     MontserratSemiBold: require('../../assets/fonts/Montserrat/static/Montserrat-SemiBold.ttf'),
   });
 
-  
-
   const [selectedDate, setSelectedDate] = useState(moment().format('YYYY-MM-DD'));
   const [checkInTime, setCheckInTime] = useState('');
   const [checkOutTime, setCheckOutTime] = useState('');
   const [showCheckInPicker, setShowCheckInPicker] = useState(false);
   const [showCheckOutPicker, setShowCheckOutPicker] = useState(false);
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
-  const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
+  const [generatedTimeSlots, setgeneratedTimeSlots] = useState([]);
   const [timeDifference, setTimeDifference] = useState(0);
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [continueButtonVisible, setContinueButtonVisible] = useState(true);
-  const [currentHour, setCurrentHour] = useState('');
-  const [openHours, setOpenHours] = useState('');
 
-  const pricePerHour = 2000;
 
   const generateTimeSlots = (openHours, selectedCheckOutTime, alreadyBooked) => {
     const [open, close] = openHours.split('-');
@@ -119,11 +146,12 @@ const CalendarComponent = ({route, navigation}) => {
     return momentArray.filter(momentStr => moment(momentStr, 'YYYY-MM-DD HH:mm').isAfter(currentDate));
   };
 
+
   useEffect(() => {
     const generatedTimeSlots = generateTimeSlots(fieldChosen.Open_Hours, checkOutTime, removePastBookings(fieldChosen.Already_Booked));
-    setCurrentHour(moment().format('HH:mm'));
+    // console.log("generatedTimeSlots: ", generatedTimeSlots)
     setAvailableTimeSlots(generatedTimeSlots.filter(slot => slot > moment().format('HH:mm')));
-  }, [checkOutTime]);
+  }, []);
 
   useEffect(() => {
     if (checkInTime && checkOutTime) {
@@ -208,62 +236,173 @@ const CalendarComponent = ({route, navigation}) => {
     }
   }
 
-  const generateHourlySlots = (checkInTime, checkOutTime) => {
-    const startTime = moment(checkInTime, 'YYYY-MM-DD HH:mm');
-    const endTime = moment(checkOutTime, 'YYYY-MM-DD HH:mm');
-    const timeSlots = [];
   
-    // Add the check-in time
-    timeSlots.push(startTime.format('YYYY-MM-DD HH:mm'));
-  
-    // Check if the check-out time is on the same day
-    if (endTime.isSame(startTime, 'day')) {
-      let currentHour = startTime.clone().add(1, 'hour');
-      while (currentHour.isBefore(endTime)) {
-        timeSlots.push(currentHour.format('YYYY-MM-DD HH:mm'));
-        currentHour.add(1, 'hour');
-      }
-    } else {
-      // Check-out time is on the next day
-      let currentHour = startTime.clone().startOf('day').add(1, 'hour');
-      while (currentHour.isBefore(endTime)) {
-        timeSlots.push(currentHour.format('YYYY-MM-DD HH:mm'));
-        currentHour.add(1, 'hour');
-      }
-    }
-  
-    // Add the check-out time
-    timeSlots.push(endTime.format('YYYY-MM-DD HH:mm'));
-  
-    return timeSlots;
-  };
-  
-  
-  const ContinueButton = () => {
-    
-    // const handleContinue = () => {
-    //   console.log("Checkin time: ", checkInTime)
-    //   console.log("Checkout time: ", checkOutTime)
-    //   console.log("Array generated: ", generateHourlySlots(checkInTime, checkOutTime))
-    //   navigation.navigate('Payment');
-    // };
-    
 
-    return (
-      <TouchableOpacity style={styles.continueButton}
-      onPress={() => {
-        navigation.navigate('Payment');
-      }}
-      >
-        <Text style={styles.continueButtonText}>Continue</Text>
-      </TouchableOpacity>
-    );
+  const convertTimeRange = (startTime, endTime) => {
+    // Parse the start and end times
+    const startDate = new Date(startTime);
+    const endDate = new Date(endTime);
+
+    // Get date, hours, and minutes for start and end times
+    const startYear = startDate.getFullYear().toString().padStart(4, '0');
+    const startMonth = (startDate.getMonth() + 1).toString().padStart(2, '0');
+    const startDay = startDate.getDate().toString().padStart(2, '0');
+    const startHours = startDate.getHours().toString().padStart(2, '0');
+    const startMinutes = startDate.getMinutes().toString().padStart(2, '0');
+    const endYear = endDate.getFullYear().toString().padStart(4, '0');
+    const endMonth = (endDate.getMonth() + 1).toString().padStart(2, '0');
+    const endDay = endDate.getDate().toString().padStart(2, '0');
+    const endHours = endDate.getHours().toString().padStart(2, '0');
+    const endMinutes = endDate.getMinutes().toString().padStart(2, '0');
+
+    // Format the date and time strings
+    const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
+    const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
+    const formattedStartTime = `${startHours}:${startMinutes}`;
+    const formattedEndTime = `${endHours}:${endMinutes}`;
+
+    // Check if the time range spans across two dates
+    const timeRange = (formattedStartDate === formattedEndDate) 
+        ? `${formattedStartTime}-${formattedEndTime} ${formattedStartDate}`
+        : `${formattedStartTime}-${formattedEndTime} ${formattedStartDate}-${formattedEndDate}`;
+
+    return timeRange;
+};
+  
+const ContinueButton = () => {
+  const bookingData = {
+      Company_Name: companyName,
+      Field_Name: fieldChosen.Field_Name,
+      Booking_Time: convertTimeRange(checkInTime, checkOutTime), // Example booking time (in ISO format)
+      Company_Email: companyEmail,
+      User_Email: bookingUser.Email,
+      Total: (timeDifference.toFixed(2) * fieldChosen.Rate).toFixed(2), // Example total amount
   };
+
+  const postNotification = async (noti) => {
+    try {
+      const response = await fetch('http://192.168.100.15:3000/addnotification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          User_Email: bookingData.User_Email, // Example user email
+          Msg: noti, // Example notification message
+        }),
+      });
+  
+      if (response.ok) {
+        console.log('Notification added successfully');
+        // Handle success, navigate to a different screen, etc.
+      } else {
+        throw new Error('Failed to add notification');
+      }
+    } catch (error) {
+      console.error('Error while posting notification:', error.message);
+      // Handle error, display an error message, etc.
+    }
+  };
+
+  const notify = () => 
+  {
+      let msg = `Booking Reserved! \n 
+        ${bookingData.Field_Name} - ${bookingData.Company_Name} booked for ${bookingData.Booking_Time}.\n 
+        Payment: ${bookingData.Total}`
+
+      postNotification(msg);
+      Toast.show({
+        type: 'info',
+        text1: msg
+      });
+
+      // Set a timeout to navigate to the Payment screen after 2000 milliseconds (2 seconds)
+      setTimeout(() => {
+          navigation.navigate('Payment', {
+              field: fieldChosen,
+              company_email: companyEmail,
+              company_name: companyName,
+              user: bookingUser,
+              email_prop: emailProp,
+              location: locationProp,
+              contact_name: contactNameProp,
+              user_email: userEmailProp,
+              booking: bookingData,
+          });
+      }, 5000); // Adjust the timeout duration as needed
+  };
+
+  const postBooking = async (bookingData) => {
+      try {
+          const response = await fetch('http://192.168.100.15:3000/addbooking', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(bookingData),
+          });
+
+          if (response.ok) {
+              console.log('Booking added successfully');
+
+              // Update the Already_Booked array in the field document
+              const { Company_Email, Field_Name } = bookingData;
+              const newArr = generateHourlySlots(checkInTime, checkOutTime);
+              for (const slot of newArr) {
+                  console.log("slot passed: ", slot)
+                  const response = await fetch('http://192.168.100.15:3000/updatefield', {
+                      method: 'PUT',
+                      headers: {
+                          'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ Company_Email, Field_Name, slot }),
+                  });
+
+                  if (!response.ok) {
+                      throw new Error('Failed to update field document');
+                  }
+              }
+
+              // Navigate to the Payment screen after successful booking
+              notify();
+          } else {
+              throw new Error('Failed to add booking');
+          }
+      } catch (error) {
+          console.error('Error while posting booking:', error.message);
+          // Handle error, display an error message, etc.
+      }
+  };
+
+  const handleContinue = () => {
+      postBooking(bookingData);
+  };
+
+  return (
+      <TouchableOpacity
+          style={styles.continueButton}
+          onPress={handleContinue} // Call handleContinue onPress
+      >
+          <Text style={styles.continueButtonText}>Continue</Text>
+      </TouchableOpacity>
+  );
+};
+
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => {}}>
+        <TouchableOpacity onPress={() => {
+        navigation.navigate('SelectField', {
+          passedCompanyName: companyName,
+          passedCompanyEmail: companyEmail,
+          passedLocation: locationProp,
+          passedEmail: emailProp,
+          passedContactName: contactNameProp,
+          passedUserEmail: userEmailProp,
+          passedCurrentUser: bookingUser,
+        });
+      }}>
           <Image source={require('../../assets/images/white_back_arrow.png')} style={styles.arrowIcon} />
         </TouchableOpacity>
         <Text style={styles.selectDateText}>Select Date</Text>
@@ -310,10 +449,6 @@ const CalendarComponent = ({route, navigation}) => {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity onPress={() => {}} style={styles.backArrowContainer}>
-          <Image source={require('../../assets/images/forward_arrow.png')} style={styles.backArrowImage} />
-        </TouchableOpacity>
-
         <View style={styles.timePicker}>
           <Text style={[styles.label, styles.checkOutLabel]}>End time</Text>
           <TouchableOpacity onPress={() => setShowCheckOutPicker(true)} style={[styles.button, styles.checkOutButton]}>
@@ -356,7 +491,7 @@ const CalendarComponent = ({route, navigation}) => {
         </View>
       </Modal>
 
-      {continueButtonVisible && <ContinueButton />}
+      {continueButtonVisible && checkInTime && checkOutTime && <ContinueButton />}
 
     </SafeAreaView>
   );

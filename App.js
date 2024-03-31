@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AppLoading from 'expo-app-loading';
 import * as Font from 'expo-font';
+import Toast from 'react-native-toast-message';
 
 import LoadingScreen from './src/screens/LoadingScreen';
 import Login from './src/screens/Login';
@@ -25,6 +26,9 @@ import UserProfile from './src/screens/UserProfile';
 import Booking from './src/screens/BookSlot'
 import SelectField from './src/screens/SelectField'
 import Payment from './src/screens/Payment'
+
+import MyBookings from './src/screens/MyBookings';
+import Notifications from './src/screens/Notifications';
 
 const Stack = createNativeStackNavigator();
 
@@ -127,7 +131,18 @@ export default function App() {
           component={Payment}
           options={{ headerShown: false }}
           />
+        <Stack.Screen
+          name="MyBookings"
+          component={MyBookings}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Notifications"
+          component={Notifications}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
+      <Toast/>
     </NavigationContainer>
   );
 }

@@ -229,7 +229,7 @@ const CompanyProfilesScreen = ({route, navigation}) => {
 
   const postReview = async () => {
     try {
-      const response = await fetch('http://10.130.42.94:3000/addreview', {
+      const response = await fetch('http://192.168.100.15:3000/addreview', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -290,6 +290,9 @@ const CompanyProfilesScreen = ({route, navigation}) => {
   };
 
   const handleBackButtonPress = () => {
+    navigation.navigate('HomePage', {
+      emailProp: email,
+    });
     // You can add functionality here if needed in the future
   };
 
@@ -356,9 +359,14 @@ const CompanyProfilesScreen = ({route, navigation}) => {
       <TouchableOpacity style={styles.bookButton}
       onPress={() => {
         navigation.navigate('SelectField', {
-          email: companyEmail,
-          company_name: companyName,
-          user: currentUser
+          // companyName, companyEmail, Location, email, contact_name, user_email, currentUser
+          passedCompanyName: companyName,
+          passedCompanyEmail: companyEmail,
+          passedLocation: Location,
+          passedEmail: email,
+          passedContactName: contact_name,
+          passedUserEmail: user_email,
+          passedCurrentUser: currentUser
         });
       }}>
         <Text style={styles.bookButtonText}>Book Kar!</Text>

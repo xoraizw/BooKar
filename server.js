@@ -8,6 +8,7 @@ const Company = require('./Company');
 const Booking = require('./Booking');
 const Review = require('./Reviews');
 const Field = require('./Field');
+const Notification = require('./Notification')
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -170,7 +171,68 @@ app.post('/addreview', async (req, res) => {
   }
 });
 
+app.post('/addbooking', async (req, res) => {
+  try {
+    // Extract data from the request body
+    const { Company_Name, Field_Name, Booking_Time, Company_Email, User_Email, Total } = req.body;
+    const Canceled = false
+    // Create a new booking document
+    const newBooking = new Booking({
+      Company_Name,
+      Field_Name,
+      Booking_Time,
+      Company_Email,
+      User_Email,
+      Total,
+      Canceled
+    });
+
+    // Save the new booking to the database
+    await newBooking.save();
+
+    res.status(201).json({ message: 'Booking added successfully!' });
+  } catch (error) {
+    console.error('Error while adding booking:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/addnotification', async (req, res) => {
+  try {
+    // Extract data from the request body
+    const { User_Email, Msg } = req.body;
+
+    // Create a new notification document
+    const newNotification = new Notification({
+      User_Email,
+      Msg,
+    });
+
+    // Save the new notification to the database
+    await newNotification.save();
+
+    res.status(201).json({ message: 'Notification added successfully!' });
+  } catch (error) {
+    console.error('Error while adding notification:', error.message);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 ////////// Get requests //////////
+app.get('/getnotifications', async (req, res) => {
+  try {
+    const { userEmail } = req.query;
+
+    // Fetch notifications for the specified user email from the database
+    const notifications = await Notification.find({ User_Email: userEmail });
+
+    res.status(200).json(notifications);
+  } catch (error) {
+    console.error('Error while fetching notifications:', error.message);
+    res.status(500).json({ error: 'Failed to fetch notifications' });
+  }
+});
+
 app.get("/", async (req,res) => {
   res.send("testing");
 });
@@ -192,9 +254,6 @@ app.get('/get-companies', async (req, res) =>
 app.get('/already-booked', async (req, res) => {
   const { company, field } = req.query;
   try {
-    // console.log("company: ", company)
-    // console.log("field: ", field)
-    // Find bookings based on Company_Name and Field_Name
     const bookings = await Booking.find({ Company_Name: company, Field_Name: field });
     // console.log(bookings)
 
@@ -229,12 +288,26 @@ app.get('/my-bookings', async (req, res) =>
   const email = req.query.userEmail;
   try 
   {
-    const bookings = await Booking.find({ Email: email });
+    const bookings = await Booking.find({ User_Email: email });
     res.json(bookings);
   } 
   catch (error) 
   {
     console.error('Error fetching bookings:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.get('/get-company', async (req, res) => {
+  const email = req.query.email;
+  try {
+    const company = await Company.findOne({ Email: email });
+    if (!company) {
+      return res.status(404).json({ message: 'Company not found' });
+    }
+    res.json(company);
+  } catch (error) {
+    console.error('Error fetching company:', error.message);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -271,6 +344,69 @@ app.get('/company-fields', async (req, res) => {
   } catch (error) {
     console.error('Error fetching fields by company email:', error.message);
     res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+
+// PUT requests
+
+app.put('/updatefield', async (req, res) => {
+  try {
+      const { Company_Email, Field_Name, slot } = req.body;
+      await Field.updateOne(
+          { Company_Email, Field_Name },
+          { $push: { Already_Booked: slot } }
+      );
+      res.status(200).json({ message: 'Field document updated successfully' });
+  } catch (error) {
+      console.error('Error while updating field document:', error.message);
+      res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/cancelbooking', async (req, res) => {
+  try {
+      const { venueName, bookingTime, userEmail, companyEmail, fieldName } = req.body;
+
+      
+      const updatedBooking = await Booking.findOneAndUpdate(
+          { Company_Email: companyEmail, Field_Name: fieldName, Booking_Time: bookingTime, User_Email: userEmail, Canceled: false },
+          { Canceled: true },
+          { new: true }
+      );
+      if (!updatedBooking) {
+          throw new Error('Booking not found');
+      }
+
+      res.status(200).json({ message: 'Booking canceled successfully' });
+  } catch (error) {
+      console.error('Error while canceling booking:', error.message);
+      res.status(500).json({ error: error.message });
+  }
+});
+
+app.put('/updatebookings', async (req, res) => {
+  try {
+      const { companyEmail, fieldName, deleteBookings } = req.body;
+
+      // console.log("deleteBookings: ", deleteBookings)
+      // Find the field using Field_Name and Company_Email
+      const field = await Field.findOne({ Company_Email: companyEmail, Field_Name: fieldName });
+
+      if (!field) {
+          throw new Error('Field not found');
+      }
+
+      field.Already_Booked = field.Already_Booked.filter(item => !deleteBookings.includes(item));
+      // console.log("new booked array: ", field.Already_Booked)
+      
+      // Save the updated field document
+      await field.save();
+
+      res.status(200).json({ message: 'Booking array successfully updated' });
+  } catch (error) {
+      console.error('Error while updating booking array:', error.message);
+      res.status(500).json({ error: error.message });
   }
 });
 
