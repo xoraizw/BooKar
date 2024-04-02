@@ -239,7 +239,8 @@ export default function HomePage({ route, navigation }) {
             handleTabPress('list');
             // navigation.navigate('UserProfile');
             navigation.navigate('MyBookings', {
-              email: emailProp
+              email: emailProp,    
+              currentUser: user         
             })}} // Navigate to the Search page
         >
           <Ionicons

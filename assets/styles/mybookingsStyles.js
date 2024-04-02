@@ -251,6 +251,14 @@ export const styles = StyleSheet.create({
       color: '#C4C4C4',
       textAlign: 'center',
     },
+    button: {
+      width: 152,
+      height: 54,
+      backgroundColor: '#7D7D7D',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 25,
+    },
     modalButtonGroup: {
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -285,4 +293,5 @@ export const styles = StyleSheet.create({
       color: '#FFFFFF',
       textAlign: 'center',
     },
+    
   });

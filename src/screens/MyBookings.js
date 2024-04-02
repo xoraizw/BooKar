@@ -1,18 +1,24 @@
 import React, { useState, useEffect, useCallback} from 'react';
-import { View, Text, TouchableOpacity, SafeAreaView, StyleSheet, Image, FlatList, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, TouchableWithoutFeedback, SafeAreaView, StyleSheet, Animated, Keyboard, Image, FlatList, Modal } from 'react-native';
+
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import { useFonts } from 'expo-font';
 import { styles } from '../../assets/styles/mybookingsStyles';
+import { styles2 } from '../../assets/styles/fieldprofileStyles';
 import img from '../../assets/images/Logo.png';
+import ReviewComponent from './ReviewComponent';
+
 const moment = require('moment');
 
 const MyBookings = ({ route, navigation }) => {
-    const { email } = route.params;
+
+    const { email, currentUser } = route.params;
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [bookings, setBookings] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
+    const [modalVisible2, setModalVisible2] = useState(false);
     const [selectedTab, setSelectedTab] = useState('list');
 
     const [selectedVenue, setSelectedVenue] = useState(null);
@@ -136,7 +142,6 @@ const MyBookings = ({ route, navigation }) => {
         </View>
       );
   };
-
   ////////////////////////ASYNC FUNCTIONS/////////////////////////////////////////
   const postNotification = async (noti) => {
     try {
@@ -238,7 +243,6 @@ const MyBookings = ({ route, navigation }) => {
   }
   };
   /////////////////////////////////////////////////////////////////////////////////
-
   const hideConfirmationModal = () => {
     setModalVisible(false);
   };
@@ -275,11 +279,11 @@ const MyBookings = ({ route, navigation }) => {
           return 'Not Started';
       }
   }
-  const BookingsCard = ({ venueName, bookingTime, cancelled, useremail, companyemail, fieldname, price }) => {
+  const BookingsCard = ({ venueName, bookingTime, cancelled, useremail, companyemail, fieldname, price, companyname }) => {
 
     if (selectedCategory === "All")
     {
-      return AllBookings({ venueName, bookingTime, cancelled, useremail, companyemail, fieldname, price })
+      return AllBookings({ venueName, bookingTime, cancelled, useremail, companyemail, fieldname, price, companyname })
     }
     else if (selectedCategory === "Ongoing")
     {
@@ -287,7 +291,7 @@ const MyBookings = ({ route, navigation }) => {
     }
     else if (selectedCategory === "Completed")
     {
-      return CompletedBookings({ venueName, bookingTime, cancelled })
+      return CompletedBookings({ venueName, bookingTime, cancelled, companyname })
     }
     else if (selectedCategory === "UpComing")
     {
@@ -313,7 +317,7 @@ const MyBookings = ({ route, navigation }) => {
       </View>
     )
   }
-  const AllBookings = ({ venueName, bookingTime, cancelled, useremail, companyemail, fieldname, price }) => {
+  const AllBookings = ({ venueName, bookingTime, cancelled, useremail, companyemail, fieldname, price, companyname }) => {
     return (
         <View style={styles.card}>
             <View style={styles.row}>
@@ -342,6 +346,11 @@ const MyBookings = ({ route, navigation }) => {
                     <Text style={styles.tagText}>Upcoming</Text>
                     <CancelButton venueName={venueName} bookingTime={bookingTime} useremail ={useremail} companyemail={companyemail} fieldname={fieldname} price={price}/>
                 </View>
+              )
+            }
+            {!cancelled && checkEventStatus(bookingTime) === "Completed" &&
+              (
+                <ReviewComponent company_name= {companyname} company_email = {selectedCompanyEmail} current_user = {currentUser} />
               )
             }
         </View>
@@ -393,7 +402,7 @@ const MyBookings = ({ route, navigation }) => {
         </View>
     );
 };
-  const CompletedBookings = ({ venueName, bookingTime, cancelled }) => {
+  const CompletedBookings = ({ venueName, bookingTime, cancelled, companyname }) => {
     if (! cancelled && checkEventStatus(bookingTime) === "Completed") return (
         <View style={styles.card}>
             <View style={styles.row}>
@@ -403,7 +412,8 @@ const MyBookings = ({ route, navigation }) => {
                     <Text style={styles.bookingTime}>{bookingTime}</Text>
                     <View style={styles.paidContainer}>
                         <Text style={styles.paidText}>Paid</Text>
-                    </View>
+                    </View>         
+                    <ReviewComponent company_name= {companyname} company_email = {selectedCompanyEmail} current_user = {currentUser} />
                 </View>
             </View>
         </View>
@@ -453,6 +463,7 @@ const MyBookings = ({ route, navigation }) => {
                   return (
                       <BookingsCard
                           venueName={(item.Field_Name).toString() + " " + (item.Company_Name).toString()}
+                          companyname = {item.Company_Name}
                           bookingTime={item.Booking_Time}
                           cancelled={item.Canceled}
                           useremail = {item.User_Email}

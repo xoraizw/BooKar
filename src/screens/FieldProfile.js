@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, Modal, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import { styles } from '../../assets/styles/fieldprofileStyles'
+import { styles2 } from '../../assets/styles/fieldprofileStyles'
 
 const CompanyProfile = ({ companyName, imageUrl, location, images, moreDetails, descriptionText, facilityIcons, facilityTexts, mapImage, reviewRating, reviewName, reviewDate, reviewContent, reviewPicture,Prices}) => {
   const [loaded] = useFonts({
@@ -38,109 +38,109 @@ const CompanyProfile = ({ companyName, imageUrl, location, images, moreDetails, 
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollView}>
-      <View style={[styles.container, { backgroundColor: '#00170C' }]}>
+    <ScrollView contentContainerStyle={styles2.scrollView}>
+      <View style={[styles2.container, { backgroundColor: '#00170C' }]}>
         <Image
           source={imageUrl}
-          style={styles.image}
+          style={styles2.image}
           resizeMode="contain"
         />
-        <View style={styles.textContainer}>
-          <Text style={styles.companyName}>{companyName}</Text>
-          <View style={styles.locationTextContainer}>
+        <View style={styles2.textContainer}>
+          <Text style={styles2.companyName}>{companyName}</Text>
+          <View style={styles2.locationTextContainer}>
             <Image
               source={require('../../assets/images/Location.png')}
-              style={styles.locationIcon}
+              style={styles2.locationIcon}
               resizeMode="contain"
             />
-            <Text style={styles.locationText}>{location}</Text>
+            <Text style={styles2.locationText}>{location}</Text>
           </View>
-          <View style={styles.galleryContainer}>
-            <Text style={styles.galleryText}>Gallery Photos</Text>
-            <Text style={styles.seeAllText}>See All</Text>
+          <View style={styles2.galleryContainer}>
+            <Text style={styles2.galleryText}>Gallery Photos</Text>
+            <Text style={styles2.seeAllText}>See All</Text>
           </View>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.imageContainer}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles2.imageContainer}>
             {images.map((image, index) => (
               <TouchableOpacity key={index} onPress={() => handleImageClick(image)}>
-                <Image source={image} style={styles.imageThumbnail} />
+                <Image source={image} style={styles2.imageThumbnail} />
               </TouchableOpacity>
             ))}
           </ScrollView>
 
           <Modal visible={selectedImage !== null} transparent={true} onRequestClose={handleCloseModal}>
-            <View style={styles.modalContainer}>
-              <TouchableOpacity onPress={handleCloseModal} style={styles.closeButton}>
-                <Text style={styles.closeButtonText}>Close</Text>
+            <View style={styles2.modalContainer}>
+              <TouchableOpacity onPress={handleCloseModal} style={styles2.closeButton}>
+                <Text style={styles2.closeButtonText}>Close</Text>
               </TouchableOpacity>
-              <Image source={selectedImage} style={styles.selectedImage} resizeMode="contain" />
+              <Image source={selectedImage} style={styles2.selectedImage} resizeMode="contain" />
             </View>
           </Modal>
 
-          <View style={styles.detailsContainer}>
-            <Text style={styles.detailsText}>Details</Text>
+          <View style={styles2.detailsContainer}>
+            <Text style={styles2.detailsText}>Details</Text>
           </View>
           {/* More details container */}
-          <View style={styles.moreDetailsContainer}>
+          <View style={styles2.moreDetailsContainer}>
             {moreDetails.map((detail, index) => (
-              <View key={index} style={styles.detailItem}>
-                <Image source={detail.image} style={styles.detailImage} />
-                <Text style={styles.detailText}>{detail.text}</Text>
+              <View key={index} style={styles2.detailItem}>
+                <Image source={detail.image} style={styles2.detailImage} />
+                <Text style={styles2.detailText}>{detail.text}</Text>
               </View>
             ))}
           </View>
-          <View style={styles.descriptionContainer}>
-            <Text style={styles.descriptionTitle}>Description</Text>
-            <View style={[styles.descriptionTextBox, expanded ? { height: 'auto' } : null]}>
-              <Text style={styles.descriptionText}>{descriptionText}</Text>
+          <View style={styles2.descriptionContainer}>
+            <Text style={styles2.descriptionTitle}>Description</Text>
+            <View style={[styles2.descriptionTextBox, expanded ? { height: 'auto' } : null]}>
+              <Text style={styles2.descriptionText}>{descriptionText}</Text>
             </View>
             {descriptionText.length > 200 && (
-              <TouchableOpacity onPress={toggleDescription} style={styles.readMoreButton}>
-                <Text style={styles.readMoreButtonText}>{expanded ? 'Read Less' : 'Read More'}</Text>
+              <TouchableOpacity onPress={toggleDescription} style={styles2.readMoreButton}>
+                <Text style={styles2.readMoreButtonText}>{expanded ? 'Read Less' : 'Read More'}</Text>
               </TouchableOpacity>
             )}
           </View>
-          <View style={styles.facilitiesHeaderContainer}>
-            <Text style={styles.facilitiesHeaderText}>Facilities</Text>
+          <View style={styles2.facilitiesHeaderContainer}>
+            <Text style={styles2.facilitiesHeaderText}>Facilities</Text>
           </View>
-          <View style={styles.facilityContainer}>
+          <View style={styles2.facilityContainer}>
             {facilityIcons.map((icon, index) => (
-              <View key={index} style={styles.facilityItem}>
-                <Image source={icon} style={styles.facilityIcon} />
-                <Text style={styles.facilityText}>{facilityTexts[index]}</Text>
+              <View key={index} style={styles2.facilityItem}>
+                <Image source={icon} style={styles2.facilityIcon} />
+                <Text style={styles2.facilityText}>{facilityTexts[index]}</Text>
               </View>
             ))}
           </View>
-          <View style={styles.locationPopupContainer}>
-            <Text style={styles.locationPopupText}>Location</Text>
-            <Image source={mapImage} style={styles.mapImage} resizeMode="contain" />
+          <View style={styles2.locationPopupContainer}>
+            <Text style={styles2.locationPopupText}>Location</Text>
+            <Image source={mapImage} style={styles2.mapImage} resizeMode="contain" />
           </View>
-          <View style={styles.reviewsContainer}>
-            <Text style={styles.reviewsText}>Reviews</Text>
+          <View style={styles2.reviewsContainer}>
+            <Text style={styles2.reviewsText}>Reviews</Text>
             <Image
               source={require('../../assets/images/gold_star.png')}
-              style={styles.starIcon}
+              style={styles2.starIcon}
               resizeMode="contain"
             />
-            <Text style={styles.reviewRating}>{reviewRating}</Text>
-            <TouchableOpacity style={styles.seeAllButton}>
-              <Text style={styles.seeAllText}>See All</Text>
+            <Text style={styles2.reviewRating}>{reviewRating}</Text>
+            <TouchableOpacity style={styles2.seeAllButton}>
+              <Text style={styles2.seeAllText}>See All</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.reviewContainer}>
+          <View style={styles2.reviewContainer}>
             {reviewName.map((name, index) => (
-              <View key={index} style={styles.reviewWrapper}>
-                <View style={styles.review}>
-                  <Image source={reviewPicture[index]} style={styles.reviewPicture} />
-                  <View style={styles.reviewTextContainer}>
-                    <Text style={styles.reviewName}>{name}</Text>
-                    <Text style={styles.reviewDate}>{reviewDate[index]}</Text>
-                    <View style={styles.reviewContentContainer}>
-                      <Text style={styles.reviewContent} numberOfLines={expandedReviewIndex === index ? null : 2} ellipsizeMode="tail">
+              <View key={index} style={styles2.reviewWrapper}>
+                <View style={styles2.review}>
+                  <Image source={reviewPicture[index]} style={styles2.reviewPicture} />
+                  <View style={styles2.reviewTextContainer}>
+                    <Text style={styles2.reviewName}>{name}</Text>
+                    <Text style={styles2.reviewDate}>{reviewDate[index]}</Text>
+                    <View style={styles2.reviewContentContainer}>
+                      <Text style={styles2.reviewContent} numberOfLines={expandedReviewIndex === index ? null : 2} ellipsizeMode="tail">
                         {reviewContent[index]}
                       </Text>
                       {reviewContent[index].length > 90 && (
-                        <TouchableOpacity onPress={() => toggleExpandReview(index)} style={styles.readMoreButton}>
-                          <Text style={styles.readMoreButtonText}>{expandedReviewIndex === index ? 'Read Less' : 'Read More'}</Text>
+                        <TouchableOpacity onPress={() => toggleExpandReview(index)} style={styles2.readMoreButton}>
+                          <Text style={styles2.readMoreButtonText}>{expandedReviewIndex === index ? 'Read Less' : 'Read More'}</Text>
                         </TouchableOpacity>
                       )}
                     </View>
@@ -227,7 +227,8 @@ const CompanyProfilesScreen = ({route, navigation}) => {
   const [selectedStar, setSelectedStar] = useState(0);
   const [errorVisible, setErrorVisible] = useState(false);
 
-  const postReview = async () => {
+  const postReview = async () => 
+  {
     try {
       const response = await fetch('http://192.168.100.15:3000/addreview', {
         method: 'POST',
@@ -318,18 +319,18 @@ const CompanyProfilesScreen = ({route, navigation}) => {
 
   return (
   <>
-    <Animated.View style={[styles.topScreen, { opacity: fadeAnim }]}>
+    <Animated.View style={[styles2.topScreen, { opacity: fadeAnim }]}>
       <TouchableOpacity onPress={handleBackButtonPress}>
         <Image
           source={require('../../assets/images/white_back_arrow.png')}
-          style={styles.backArrow}
+          style={styles2.backArrow}
           resizeMode="contain"
         />
       </TouchableOpacity>
-      <Text style={styles.companyNameTop}>{companyName}</Text>
+      <Text style={styles2.companyNameTop}>{companyName}</Text>
     </Animated.View>
     <ScrollView
-      contentContainerStyle={styles.scrollView}
+      contentContainerStyle={styles2.scrollView}
       onScroll={handleScroll}
       scrollEventThrottle={16}
     >
@@ -352,11 +353,11 @@ const CompanyProfilesScreen = ({route, navigation}) => {
         Prices={Prices}
       />
     </ScrollView>
-    <View style={styles.fixedContainer}>
-      <TouchableOpacity style={styles.button} onPress={openModal}>
-        <Text style={styles.buttonText}>Review</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.bookButton}
+    <View style={styles2.fixedContainer}>
+      {/* <TouchableOpacity style={styles2.button} onPress={openModal}>
+        <Text style={styles2.buttonText}>Review</Text>
+      </TouchableOpacity> */}
+      <TouchableOpacity style={styles2.bookButton}
       onPress={() => {
         navigation.navigate('SelectField', {
           // companyName, companyEmail, Location, email, contact_name, user_email, currentUser
@@ -369,7 +370,7 @@ const CompanyProfilesScreen = ({route, navigation}) => {
           passedCurrentUser: currentUser
         });
       }}>
-        <Text style={styles.bookButtonText}>Book Kar!</Text>
+        <Text style={styles2.bookButtonText}>Book Kar!</Text>
       </TouchableOpacity>
     </View>
     <Modal
@@ -379,15 +380,15 @@ const CompanyProfilesScreen = ({route, navigation}) => {
       onRequestClose={closeModal}
     >
       <TouchableWithoutFeedback onPress={handleBackgroundPress}>
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
-              <Image source={require('../../assets/images/close.png')} style={styles.backArrow} />
+        <View style={styles2.centeredView}>
+          <View style={styles2.modalView}>
+            <TouchableOpacity onPress={closeModal} style={styles2.closeButton}>
+              <Image source={require('../../assets/images/close.png')} style={styles2.backArrow} />
             </TouchableOpacity>
-            <Text style={styles.modalText}>How was your experience at {companyName}?</Text>
-            <View style={styles.textInputContainer}>
+            <Text style={styles2.modalText}>How was your experience at {companyName}?</Text>
+            <View style={styles2.textInputContainer}>
               <TextInput
-                style={styles.textInput}
+                style={styles2.textInput}
                 placeholder="Add Comment (Optional)"
                 onChangeText={handleTextInputChange}
                 value={textInputValue}
@@ -396,7 +397,7 @@ const CompanyProfilesScreen = ({route, navigation}) => {
                 maxLength={1100}
               />
             </View>
-            <View style={styles.starContainer}>
+            <View style={styles2.starContainer}>
               {[1, 2, 3, 4, 5].map((index) => (
                 <TouchableOpacity
                   key={index}
@@ -406,19 +407,19 @@ const CompanyProfilesScreen = ({route, navigation}) => {
                     name={selectedStar >= index + 1 ? 'star' : 'star-outline'}
                     size={36}
                     color={selectedStar >= index + 1 ? '#D45A01' : '#7D7D7D'}
-                    style={styles.starIcon}
+                    style={styles2.starIcon}
                   />
                 </TouchableOpacity>
               ))}
             </View>
             {errorVisible && (
-                <View style={styles.errorContainer}>
-                  <Text style={styles.errorText}>Please choose a rating before submitting the review.</Text>
+                <View style={styles2.errorContainer}>
+                  <Text style={styles2.errorText}>Please choose a rating before submitting the review.</Text>
                 </View>
             )}    
-            <View style={styles.submitButtonContainer}>
+            <View style={styles2.submitButtonContainer}>
               <TouchableOpacity
-                style={styles.submitButton}
+                style={styles2.submitButton}
                 onPress={() => {
                   if (selectedStar > 0) {
                     postReview(); // Call the postReview function when the button is pressed
@@ -431,7 +432,7 @@ const CompanyProfilesScreen = ({route, navigation}) => {
                   }
                 }}
               >
-                <Text style={styles.submitButtonText}>Submit</Text>
+                <Text style={styles2.submitButtonText}>Submit</Text>
               </TouchableOpacity>
             </View>
           </View>

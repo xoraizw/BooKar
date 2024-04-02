@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export const styles = StyleSheet.create({
+export const styles2 = StyleSheet.create({
   errorContainer: {
     backgroundColor: 'rgba(255, 0, 0, 0.7)',
     borderRadius: 8,
