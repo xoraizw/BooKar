@@ -85,10 +85,11 @@ const CalendarComponent = ({route, navigation}) => {
   const [continueButtonVisible, setContinueButtonVisible] = useState(true);
 
 
+  // Changed!
   const generateTimeSlots = (openHours, selectedCheckOutTime, alreadyBooked) => {
     const [open, close] = openHours.split('-');
-    const openTime = moment(open, 'HH:mm');
-    let closeTime = moment(close, 'HH:mm');
+    const openTime = moment(`${selectedDate} ${open}`, 'YYYY-MM-DD HH:mm');
+    let closeTime = moment(`${selectedDate} ${close}`, 'YYYY-MM-DD HH:mm');
   
     // Adjust close time based on the selected check-out time
     if (selectedCheckOutTime) {
@@ -147,12 +148,13 @@ const CalendarComponent = ({route, navigation}) => {
   };
 
 
+  
+  // Changed!
   useEffect(() => {
     const generatedTimeSlots = generateTimeSlots(fieldChosen.Open_Hours, checkOutTime, removePastBookings(fieldChosen.Already_Booked));
-    // console.log("generatedTimeSlots: ", generatedTimeSlots)
     setAvailableTimeSlots(generatedTimeSlots.filter(slot => slot > moment().format('HH:mm')));
-  }, []);
-
+  }, [selectedDate]);
+  
   useEffect(() => {
     if (checkInTime && checkOutTime) {
       const checkInMoment = moment(checkInTime, 'YYYY-MM-DD HH:mm');
@@ -187,13 +189,16 @@ const CalendarComponent = ({route, navigation}) => {
     // Return a loading indicator or null if fonts are not loaded yet
     return null; // Or render a loading spinner, etc.
   }
+  
+  // Changed!
   const onDayPress = (day) => {
     const selected = moment(day.dateString);
-    if (selected.isSameOrAfter(moment(), 'day')) {
+    const today = moment();
+    const sevenDaysLater = moment().add(7, 'days');
+    if (selected.isSameOrAfter(today, 'day') && selected.isSameOrBefore(sevenDaysLater, 'day')) {
       setSelectedDate(selected.format('YYYY-MM-DD'));
     }
   };
-
   const handleCheckInChange = (time) => {
     setCheckInTime(time);
     setShowCheckInPicker(false);
@@ -411,8 +416,8 @@ const ContinueButton = () => {
         <View style={styles.calendar}>
           <Calendar
             current={selectedDate}
-            minDate={new Date().toDateString()} // Set minimum date to today
-            maxDate={new Date().toDateString()} // Set maximum date to selectedDate
+            minDate={moment().format()} // Changed! 
+            maxDate={moment().add(7, 'days').format()} // Changed! 
             onDayPress={onDayPress}
             markingType={'custom'}
             markedDates={{
