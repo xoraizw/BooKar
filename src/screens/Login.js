@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Image, View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
-import { styles } from '../../assets/styles/loginStyles'
+import { styles } from '../../assets/styles/loginStyles';
+import {ipAddr} from './ipconfig.js';
 
 const usernameIcon = require('../../assets/images/username-icon.png');
 const passwordIcon = require('../../assets/images/pw-icon.png');
@@ -30,7 +31,7 @@ const Login = () => {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch('http://192.168.100.15:3000/signin', {
+      const response = await fetch(`http://${ipAddr}:3000/signin`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -42,9 +43,16 @@ const Login = () => {
       })
       .then(response => {
         if (response.ok) {
-          navigation.navigate('HomePage', {
-            emailProp: username,
-          });
+          if (response.status === 200) {
+            navigation.navigate('HomePage', {
+              emailProp: username,
+            });
+          }
+          else if (response.status === 205) {
+            navigation.navigate('OwnerHomepage', {
+              email: username,
+            });
+          }
         } 
         else {
           throw new Error('Failed to Login');
@@ -71,8 +79,11 @@ const Login = () => {
   };
 
   return (
+    
     <View style={styles.body}>
-      <Text style={styles.heading}>Login to Bookar</Text>
+      <View style={styles.headingContainer}>
+        <Text style={styles.heading}>Login to{'\n'}Bookar</Text>
+      </View>
   
       {loginMessage ? <Text style={styles.loginMessage}>{loginMessage}</Text> : null}
   
@@ -101,7 +112,7 @@ const Login = () => {
   
       <View style={styles.rememberMeContainer}>
         <TouchableOpacity onPress={handleRememberMeChange} style={styles.checkbox}>
-          {rememberMe && <Image source={passwordIcon} style={styles.checkIcon} />}
+          {rememberMe && <Ionicons name="checkmark-outline" color={'white'}></Ionicons>}
         </TouchableOpacity>
         <Text style={styles.rememberMeLabel}>Remember me</Text>
       </View>

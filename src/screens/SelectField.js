@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Image, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
-import { styles } from '../../assets/styles/selectfieldStyles'
+import { styles } from '../../assets/styles/selectfieldStyles';
+import {ipAddr} from './ipconfig.js';
+
+
 
 
 const NewPage = ({route, navigation}) => {
@@ -15,7 +18,7 @@ const NewPage = ({route, navigation}) => {
 
   const getFields = async () => {
     try {
-      const response = await fetch(`http://192.168.100.15:3000/company-fields?companyEmail=${passedCompanyEmail}`);
+      const response = await fetch(`http://${ipAddr}:3000/company-fields?companyEmail=${passedCompanyEmail}`);
       const data = await response.json(); // Parse the JSON response
       if (data) {
         setFields(data); // Set the parsed data to bookedTimeSlots

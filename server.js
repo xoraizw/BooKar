@@ -9,6 +9,7 @@ const Booking = require('./Booking');
 const Review = require('./Reviews');
 const Field = require('./Field');
 const Notification = require('./Notification')
+const Inventory = require('./Inventory'); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -25,16 +26,20 @@ mongoose.connect('mongodb+srv://bookar360:Bookar360720@bookarmain.kzrocom.mongod
 
 ////////// Post requests //////////
 app.post('/signin', async (req, res) => {
-    try {
+  try {
       const existingUser = await User.findOne({ Email: req.body.email.toLowerCase() });
   
       if (existingUser) 
       {
   
-        if (req.body.password && existingUser.Password === req.body.password) 
+        if (req.body.password && existingUser.Password === req.body.password && existingUser.userType == 'Owner') 
+        {
+          res.status(205).json({ message: 'Login successful!' });
+        } 
+        else if (req.body.password && existingUser.Password === req.body.password) 
         {
           res.status(200).json({ message: 'Login successful!' });
-        } 
+        }
         else 
         {
           console.log('Password not provided or incorrect for user:', existingUser.Email);
@@ -72,22 +77,30 @@ app.post('/signup', async (req, res) => {
 
 app.post('/create-profile', async (req, res) => 
 {
-  const { fullName, age } = req.body;
+  const {fullName, userType, username, email, phoneNumber, password, age, gender, city} = req.body;
+  
+  const verificationCode = Math.floor(1000 + Math.random() * 9000);
 
   try {
     const newUser = new User({
-      Username: tempUserData.username,
+      Username: username,
       Name: fullName,
-      Email: tempUserData.email,
+      Email: email,
       Age: age,
-      Password: tempUserData.password,
-      Phone_number: tempUserData.phoneNumber
+      Password: password,
+      Phone_number: phoneNumber,
+      verificationCode: verificationCode,
+      verified: false,
+      userType: userType,
+      city : city,
+      gender: gender
     });
 
     await newUser.save();
-    tempUserData = {};
 
-    res.status(201).json({ message: 'User registered successfully' });
+    sendVerificationEmail(email, verificationCode);
+
+    res.status(201).json({ message: 'User created successfully, verification code sent.' });
   } catch (error) {
     console.error('Error registering user:', error);
     res.status(500).json({ message: 'Server error' });
@@ -297,6 +310,20 @@ app.get('/my-bookings', async (req, res) =>
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+app.get('/owner-bookings', async (req, res) => 
+{
+  const email = req.query.ownerEmail;
+  try 
+  {
+    const bookings = await Booking.find({ Company_Email: email });
+    res.json(bookings);
+  } 
+  catch (error) 
+  {
+    console.error('Error fetching bookings:', error.message);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 app.get('/get-company', async (req, res) => {
   const email = req.query.email;
@@ -335,7 +362,25 @@ app.get('/get-user', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+app.get('/get-reviews', async (req, res) => {
+  // Extract the company email from the query parameters
+  const companyEmail = req.query.companyEmail;
 
+  try {
+    // Create a regular expression to perform case-insensitive search
+    const regex = new RegExp(`${companyEmail}`, 'i');
+
+    // Find reviews based on the company email
+    const reviews = await Review.find({ CompanyEmailGiven: regex }).exec();
+
+    // Send the reviews as JSON response
+    res.json(reviews);
+  } catch (error) {
+    // Handle errors
+    console.error('Error searching for reviews:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 app.get('/company-fields', async (req, res) => {
   const companyEmail = req.query.companyEmail;
   try {
@@ -409,6 +454,110 @@ app.put('/updatebookings', async (req, res) => {
       res.status(500).json({ error: error.message });
   }
 });
+
+// Verification Work 
+
+const SibApiV3Sdk = require('sib-api-v3-sdk');
+const defaultClient = SibApiV3Sdk.ApiClient.instance;
+
+// Configure API key authorization
+const apiKey = defaultClient.authentications['api-key'];
+apiKey.apiKey = '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'; // Replace with your actual API key
+
+const sendVerificationEmail = async (email, verificationCode) => {
+  const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
+
+  const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail(); 
+  sendSmtpEmail.subject = "Welcome To Bookar!";
+  sendSmtpEmail.htmlContent = `<html><body><p>Your verification code is: <strong>${verificationCode}</strong></p></body></html>`;
+  sendSmtpEmail.sender = {"name": "BookarApp", "email": "bookar360@gmail.com"};
+  sendSmtpEmail.to = [{"email": email}];
+
+  try {
+    const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
+    console.log('API called successfully. Returned data: ', data);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+app.post('/verify-code', async (req, res) => {
+  const { email, code } = req.body;
+
+  try {
+    const user = await User.findOne({ Email: email });
+    if (!user || user.verificationCode != code) {
+      return res.status(400).json({ message: 'Invalid code.' });
+    }
+
+    user.verified = true;
+    await user.save();
+
+    res.status(200).json({ message: 'User successfully verified.' });
+  } catch (error) {
+    console.error('Error during code verification:', error);
+    res.status(500).json({ error: 'Server error during code verification.' });
+  }
+});
+
+app.post('/resend-code', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Find the user by email
+    const user = await User.findOne({ Email: email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate a new 4-digit verification code
+    const newVerificationCode = Math.floor(1000 + Math.random() * 9000);
+
+    // Update the user's verification code
+    user.verificationCode = newVerificationCode;
+    await user.save();
+
+    // Send the new verification code via email
+    sendVerificationEmail(email, newVerificationCode);
+
+    res.status(200).json({ message: 'New verification code sent successfully.' });
+  } catch (error) {
+    console.error('Error resending verification code:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Inventory Management 
+
+app.get('/fetchinventory', async (req, res) => {
+  const { email } = req.query;
+  try {
+    const inventory = await Inventory.findOne({ email: email });
+    if (!inventory) {
+      return res.status(404).json({ message: 'Inventory not found for this user' });
+    }
+    res.json(inventory);
+  } catch (error) {
+    console.error('Error fetching inventory:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.post('/updateinventory', async (req, res) => {
+  const { email, items } = req.body; // items should be an array of item objects
+  try {
+    const inventory = await Inventory.findOneAndUpdate(
+      { email: email },
+      { $set: { items: items } },
+      { new: true, upsert: true } // This option creates a new document if one doesn't exist
+    );
+    res.json({ message: 'Inventory updated successfully', inventory });
+  } catch (error) {
+    console.error('Error updating inventory:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 
 // SERVER STARTED
 app.listen(PORT, () => {

@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font';
 import moment from 'moment';
 import { styles } from '../../assets/styles/bookslotStyles';
 import Toast from 'react-native-toast-message';
+import {ipAddr} from './ipconfig.js';
 
 const TimePicker = ({ selectedValue, onValueChange, visible, onClose, availableTimeSlots }) => {
   return (
@@ -248,6 +249,13 @@ const CalendarComponent = ({route, navigation}) => {
     const startDate = new Date(startTime);
     const endDate = new Date(endTime);
 
+    // Check if the end time is less than the start time
+    // If so, it means the booking spans through midnight
+    if (endDate < startDate) {
+        // Subtract one day from the end date to attach only the previous date
+        endDate.setDate(endDate.getDate() - 1);
+    }
+
     // Get date, hours, and minutes for start and end times
     const startYear = startDate.getFullYear().toString().padStart(4, '0');
     const startMonth = (startDate.getMonth() + 1).toString().padStart(2, '0');
@@ -271,8 +279,9 @@ const CalendarComponent = ({route, navigation}) => {
         ? `${formattedStartTime}-${formattedEndTime} ${formattedStartDate}`
         : `${formattedStartTime}-${formattedEndTime} ${formattedStartDate}-${formattedEndDate}`;
 
-    return timeRange;
+    return `${formattedStartTime}-${formattedEndTime} ${formattedStartDate}`;
 };
+
   
 const ContinueButton = () => {
   const bookingData = {
@@ -286,7 +295,7 @@ const ContinueButton = () => {
 
   const postNotification = async (noti) => {
     try {
-      const response = await fetch('http://192.168.100.15:3000/addnotification', {
+      const response = await fetch(`http://${ipAddr}:3000/addnotification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -339,7 +348,7 @@ const ContinueButton = () => {
 
   const postBooking = async (bookingData) => {
       try {
-          const response = await fetch('http://192.168.100.15:3000/addbooking', {
+          const response = await fetch(`http://${ipAddr}:3000/addbooking`, {
               method: 'POST',
               headers: {
                   'Content-Type': 'application/json',
@@ -355,7 +364,7 @@ const ContinueButton = () => {
               const newArr = generateHourlySlots(checkInTime, checkOutTime);
               for (const slot of newArr) {
                   console.log("slot passed: ", slot)
-                  const response = await fetch('http://192.168.100.15:3000/updatefield', {
+                  const response = await fetch(`http://${ipAddr}:3000/updatefield`, {
                       method: 'PUT',
                       headers: {
                           'Content-Type': 'application/json',

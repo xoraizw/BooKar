@@ -9,6 +9,9 @@ import { styles } from '../../assets/styles/mybookingsStyles';
 import { styles2 } from '../../assets/styles/fieldprofileStyles';
 import img from '../../assets/images/Logo.png';
 import ReviewComponent from './ReviewComponent';
+import {ipAddr} from './ipconfig.js';
+
+
 
 const moment = require('moment');
 
@@ -145,7 +148,7 @@ const MyBookings = ({ route, navigation }) => {
   ////////////////////////ASYNC FUNCTIONS/////////////////////////////////////////
   const postNotification = async (noti) => {
     try {
-      const response = await fetch('http://192.168.100.15:3000/addnotification', {
+      const response = await fetch(`http://${ipAddr}:3000/addnotification`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -187,7 +190,7 @@ const MyBookings = ({ route, navigation }) => {
       80% of the money will be refunded within 48-hours.`
     });
     try {
-        const response = await fetch('http://192.168.100.15:3000/cancelbooking', {
+        const response = await fetch(`http://${ipAddr}:3000/cancelbooking`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -209,7 +212,7 @@ const MyBookings = ({ route, navigation }) => {
   const fetchMyBookings = async () => {
       try {
         console.log("route param: ", route.params.email)
-        const response = await fetch(`http://192.168.100.15:3000/my-bookings?userEmail=${route.params.email}`);
+        const response = await fetch(`http://${ipAddr}:3000/my-bookings?userEmail=${route.params.email}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
           }
@@ -224,7 +227,7 @@ const MyBookings = ({ route, navigation }) => {
   };
   const modifyBookedArray = async (companyEmail, fieldName, deleteBookings) => {
   try {
-      const response = await fetch('http://192.168.100.15:3000/updatebookings', {
+      const response = await fetch(`http://${ipAddr}:3000/updatebookings`, {
           method: 'PUT',
           headers: {
               'Content-Type': 'application/json',

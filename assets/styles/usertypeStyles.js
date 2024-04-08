@@ -4,13 +4,14 @@ export const styles = StyleSheet.create({
     joinFamilyContainer: {
       position: 'absolute',
       alignItems: 'flex-start',
+      marginTop: 65,
     },
+
     joinFamilyText: {
-      fontSize: 45
-      ,
+      fontSize: 48,
       color: '#D45A01',
       // fontWeight: 'bold',
-      fontFamily: 'Montserrat',
+      fontFamily: 'MontserratRegular',
     },
     icon: {
       width: 150,
@@ -19,13 +20,13 @@ export const styles = StyleSheet.create({
     // ...
     buttonText: {
       color: '#FFF',
-      fontFamily: 'Montserrat',
+      fontFamily: 'MontserratRegular',
       fontSize: 19,
       backgroundColor: 'transparent', // Add this line
     },
     touchableOpacity: {
       alignItems: 'center',
-      borderWidth: 2, // Outline width
+      // borderWidth: 2, // Outline width
       backgroundColor: 'transparent',
       width: 150, // Add this line
       height: 150,
@@ -50,9 +51,9 @@ export const styles = StyleSheet.create({
     nextButton: {
       alignItems: 'center',
       backgroundColor: '#D45A01',
-      padding: 13,
-      marginBottom: 10,
-      marginHorizontal: 10,
+      padding: 15,
+      marginBottom: 40,
+      marginHorizontal: 25,
       borderRadius: 26.5,
       marginTop: -55,
       

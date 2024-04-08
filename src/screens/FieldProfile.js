@@ -2,7 +2,10 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, Modal, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import { styles2 } from '../../assets/styles/fieldprofileStyles'
+import { styles2 } from '../../assets/styles/fieldprofileStyles';
+import {ipAddr} from './ipconfig.js';
+
+
 
 const CompanyProfile = ({ companyName, imageUrl, location, images, moreDetails, descriptionText, facilityIcons, facilityTexts, mapImage, reviewRating, reviewName, reviewDate, reviewContent, reviewPicture,Prices}) => {
   const [loaded] = useFonts({
@@ -230,7 +233,7 @@ const CompanyProfilesScreen = ({route, navigation}) => {
   const postReview = async () => 
   {
     try {
-      const response = await fetch('http://192.168.100.15:3000/addreview', {
+      const response = await fetch(`http://${ipAddr}:3000/addreview`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

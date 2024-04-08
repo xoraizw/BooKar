@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native'; // Import the useNavigation hook
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, ScrollView } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {ipAddr} from './ipconfig.js';
+
+
 
 export default function EditProfileScreen({ route }) {
     const { emailRecvd, namercv } = route.params;
@@ -47,7 +50,7 @@ export default function EditProfileScreen({ route }) {
         }
 
         try {
-            const response = await fetch('http://192.168.100.15:3000/change-password', {
+            const response = await fetch(`http://${ipAddr}:3000/change-password`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

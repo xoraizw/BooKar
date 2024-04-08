@@ -9,6 +9,9 @@ const userSchema = new mongoose.Schema({
   Username: { type: String, required: true, unique: true },
   verificationCode: { type: Number, default: null }, // Defaulted to null
   verified: { type: Boolean, default: false }, // Added field for verification status
+  userType: { type: String, required: true },
+  city: { type: String, required: true },
+  gender: { type: String, required: true },
 });
 
 module.exports = mongoose.model('User', userSchema);

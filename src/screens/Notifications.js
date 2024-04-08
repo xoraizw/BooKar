@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, TouchableOpacity } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { styles } from '../../assets/styles/notificationsStyles';
+import {ipAddr} from './ipconfig.js';
+
+
 
 const NotificationScreen = ({ navigation, route }) => {
   const { email } = route.params;
@@ -9,7 +12,7 @@ const NotificationScreen = ({ navigation, route }) => {
 
   const fetchNotifications = async () => {
     try {
-      const response = await fetch(`http://192.168.100.15:3000/getnotifications?userEmail=${email}`);
+      const response = await fetch(`http://${ipAddr}:3000/getnotifications?userEmail=${email}`);
   
       if (response.ok) {
         const data = await response.json();

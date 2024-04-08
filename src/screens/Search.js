@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TextInput, FlatList, Text, ScrollView, TouchableOpacity, Image} from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
-import { styles } from '../../assets/styles/searchStyles'
+import { styles } from '../../assets/styles/searchStyles';
+import {ipAddr} from './ipconfig.js';
+
+
 
 const SearchScreen = ({ route, navigation }) => {
   const [selectedTab, setSelectedTab] = useState('search');
@@ -20,7 +23,7 @@ const SearchScreen = ({ route, navigation }) => {
 
   const userDetails = async () => {
     try {
-      const response = await fetch(`http://192.168.100.15:3000/get-user?userEmail=${route.params.emailPassed}`);
+      const response = await fetch(`http://${ipAddr}:3000/get-user?userEmail=${route.params.emailPassed}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -51,7 +54,7 @@ const SearchScreen = ({ route, navigation }) => {
         setFields([]); // Clear fields if searchQuery is empty
         return;
       }
-      const response = await fetch(`http://192.168.100.15:3000/search-fields?field=${searchQuery}`);
+      const response = await fetch(`http://${ipAddr}:3000/search-fields?field=${searchQuery}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }

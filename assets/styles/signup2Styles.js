@@ -25,7 +25,7 @@ export const styles = StyleSheet.create({
       marginBottom: 10,
     },
     errorText: {
-      color: 'red',
+      color: '#C4C4C4',
       marginBottom: 10,
     },
     inputContainer: {

@@ -1,38 +1,173 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, Image, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; 
+import { View, Text, TextInput, TouchableOpacity, Keyboard, TouchableWithoutFeedback, Animated, Image } from 'react-native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { styles } from '../../assets/styles/verificationStyles';
+import { ipAddr } from './ipconfig.js';
 
-export default function App() {
-  const [code, setCode] = useState(['', '', '', '']);
-  const [statusText, setStatusText] = useState('Status');
-  const [timer, setTimer] = useState(10);
+export default function VerificationScreen() {
+  const [code, setCode] = useState(new Array(4).fill(''));
+  const [statusText, setStatusText] = useState('A code has been sent to your email.');
+  const [timer, setTimer] = useState(30); // you can adjust the resend timer as needed
   const [codeError, setCodeError] = useState(false);
   const inputRefs = useRef([]);
   const navigation = useNavigation();
+  const route = useRoute();
+  const { email, userType } = route.params; // assuming you are passing the email as a route param
+  const [slideDownAnim] = useState(new Animated.Value(-50));
+  const [fadeAnim] = useState(new Animated.Value(0));
 
+// Fetch the verification code from the server when the component mounts
+useEffect(() => {
+  
+  const sendVerificationCode = async () => {
+    try {
+      const response = await fetch(`http://${ipAddr}:3000/send-verification-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        // Handle success, perhaps by updating state to indicate the code has been sent
+        console.log('Verification code sent successfully.');
+      } else {
+        // Handle error case, perhaps by setting an error message in state
+        console.error('Failed to send verification code:', data.message);
+      }
+    } catch (error) {
+      // Handle network error, perhaps by setting an error message in state
+      console.error('Network error when trying to send verification code:', error);
+    }
+  };
+
+  sendVerificationCode();
+}, []);
+
+  // Timer to handle resend code option
   useEffect(() => {
+    let interval;
     if (timer > 0) {
-      const timerInterval = setInterval(() => {
+      interval = setInterval(() => {
         setTimer((prevTimer) => prevTimer - 1);
       }, 1000);
-
-      return () => clearInterval(timerInterval);
     } else {
-      setStatusText('Resend Code?');
+      setStatusText('Resend Code.');
     }
+
+    return () => clearInterval(interval);
   }, [timer]);
 
   const verifyCode = async () => {
     const enteredCode = code.join('');
-    if (enteredCode.length === 4 && /^\d{4}$/.test(enteredCode)) { 
-      console.log('Verification successful');
-      navigation.navigate('HomePage');
-    } 
-    else 
-    {
+    if (enteredCode.length === 4 && /^\d{4}$/.test(enteredCode)) {
+      try {
+        const response = await fetch(`http://${ipAddr}:3000/verify-code`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code: enteredCode })
+        });
+  
+        if (response.ok) { // Check if the status code is in the 200-299 range
+          if (userType == 'Player')
+          {
+            navigation.navigate('HomePage', { emailProp: email });
+          }
+          else
+          {
+            navigation.navigate('OwnerHomepage', { emailProp: email });
+          }
+        } else {
+          setCodeError(true);
+          const data = await response.json(); // Optionally log the error message from the server
+          console.error('Verification failed:', data.message);
+        }
+      } catch (error) {
+        setCodeError(true);
+        console.error('Error verifying code:', error);
+      }
+    } else {
       setCodeError(true);
-      console.log('Invalid code'); 
+    }
+  };
+
+  const fadeIn = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const fadeOut = () => {
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 3000,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const slideDown = () => {
+    Animated.timing(slideDownAnim, {
+      toValue: Platform.OS === 'ios' ? -350 : 0, // Adjust this value to slide to the correct position from the top
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  };
+  
+  const slideUp = () => {
+    Animated.timing(slideDownAnim, {
+      toValue: -1000, // Start off-screen, above the view
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  };
+  
+  
+  const setErrorMessageWithAnimation = (message) => {
+    setCodeError(true); // Set your error state to true
+    setStatusText(message); // Update the status text with the error message
+    fadeIn();
+    slideDown();
+  
+    setTimeout(() => {
+      fadeOut();
+      slideUp();
+      setCodeError(false); // Optionally reset the error state after the animation
+    }, 3000); // Adjust timing as needed
+  };
+  
+
+  const errorBubbleStyle = {
+    position: 'absolute',
+    alignSelf: 'center',
+    backgroundColor: 'red', // Red bubble
+    borderRadius: 20, // Rounded corners
+    padding: 10,
+    paddingHorizontal: 20,
+    zIndex: 10, // Ensure it's above other components
+  };
+  
+
+  const resendCode = async () => {
+    // Call the backend API to resend the code
+    try {
+      const response = await fetch(`http://${ipAddr}:3000/resend-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      const data = await response.json();
+      if (data.success) {
+        setTimer(30);
+        setStatusText('A new code has been sent to your email.');
+        setCode(new Array(4).fill(''));
+      } else {
+        console.error('Error resending code:', data.message);
+      }
+    } catch (error) {
+      console.error('Error resending code:', error);
     }
   };
 
@@ -49,11 +184,6 @@ export default function App() {
     if (value.length === 0 && index > 0) {
       inputRefs.current[index - 1].focus();
     }
-  };
-
-  const resendCode = () => {
-    setTimer(10);
-    setStatusText('Status');
   };
 
   const dismissKeyboard = () => {
@@ -86,9 +216,18 @@ export default function App() {
               />
             ))}
           </View>
-          {codeError && (
-              <Text style={styles.errorText}>Please enter a valid code</Text>
-          )}
+          {/* {codeError && <Text style={styles.errorText}>Please enter a valid code</Text>} */}
+          <Animated.View
+            style={[
+              errorBubbleStyle, // Define this style
+              {
+                opacity: fadeAnim,
+                transform: [{ translateY: slideDownAnim }],
+              },
+            ]}
+          >
+            {codeError && <Text style={styles.errorText}>Please enter a valid code</Text>}
+          </Animated.View>
           {timer > 0 ? (
             <Text style={styles.status}>
               Time left:{' '}

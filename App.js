@@ -30,6 +30,18 @@ import Payment from './src/screens/Payment'
 import MyBookings from './src/screens/MyBookings';
 import Notifications from './src/screens/Notifications';
 
+import OwnerHomepage from './src/screens/Owner_Landing';
+import OwnerBookings from './src/screens/OwnerBookings'
+import ManageListingsOwner from './src/screens/Manage_Listings';
+import UpdateListingsOwner from './src/screens/Update_Listing';
+import UpdatePricingOwner from './src/screens/Update_Pricing_Capacity';
+import UploadImages from './src/screens/Upload_Images';
+import CreateListingOwner from './src/screens/Create_Listing';
+import CreateSuccess from './src/screens/CreateSuccess';
+import OwnerInventory from './src/screens/OwnerInventory';
+import StatScreen from './src/screens/Stats'
+import OwnerReview from './src/screens/OwnerReview'
+
 const Stack = createNativeStackNavigator();
 
 const fetchFonts = () => {
@@ -37,6 +49,16 @@ const fetchFonts = () => {
     'Montserrat-Regular': require('./assets/fonts/Montserrat-Regular.ttf'),
     'Urbanist-Medium': require('./assets/fonts/Urbanist-Medium.ttf'),
     'Urbanist-Bold': require('./assets/fonts/Urbanist-Bold.ttf'),
+    'UrbanistRegular': require('./assets/fonts/Urbanist/static/Urbanist-Regular.ttf'),
+    'UrbanistLight': require('./assets/fonts/Urbanist/static/Urbanist-Light.ttf'),
+    'UrbanistBold': require('./assets/fonts/Urbanist/static/Urbanist-Bold.ttf'),
+    'UrbanistSemiBold': require('./assets/fonts/Urbanist/static/Urbanist-SemiBold.ttf'),
+    'UrbanistMedium': require('./assets/fonts/Urbanist/static/Urbanist-Medium.ttf'),
+    'MontserratBold': require('./assets/fonts/Montserrat/static/Montserrat-Bold.ttf'),
+    'MontserratExtraLight': require('./assets/fonts/Montserrat/static/Montserrat-ExtraLight.ttf'),
+    'MontserratRegular': require('./assets/fonts/Montserrat/static/Montserrat-Regular.ttf'),
+    'MontserratSemiBold': require('./assets/fonts/Montserrat/static/Montserrat-SemiBold.ttf'),
+    'MontserratMedium': require('./assets/fonts/Montserrat/static/Montserrat-Medium.ttf'),
   });
 };
 
@@ -139,6 +161,61 @@ export default function App() {
         <Stack.Screen
           name="Notifications"
           component={Notifications}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="OwnerHomepage"
+          component={OwnerHomepage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="ManageListingsOwner"
+          component={ManageListingsOwner}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UpdateListingsOwner"
+          component={UpdateListingsOwner}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UpdatePricingOwner"
+          component={UpdatePricingOwner}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UploadImages"
+          component={UploadImages}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CreateListingOwner"
+          component={CreateListingOwner}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="CreateSuccess"
+          component={CreateSuccess}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="OwnerInventory"
+          component={OwnerInventory}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="OwnerBookings"
+          component={OwnerBookings}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="StatScreen"
+          component={StatScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="OwnerReview"
+          component={OwnerReview}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

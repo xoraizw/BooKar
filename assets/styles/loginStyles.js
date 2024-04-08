@@ -1,6 +1,10 @@
 import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
+  headingContainer: {
+    alignSelf: 'flex-start', // Align container to the start of the parent
+    marginHorizontal: 30,
+  },
     body: {
       flex: 1,
       justifyContent: 'center',
@@ -8,23 +12,25 @@ export const styles = StyleSheet.create({
       backgroundColor: '#00170C',
     },
     heading: {
-      fontFamily: 'Montserrat-Regular',
-      fontSize: 45,
+      fontFamily: 'MontserratRegular',
+      fontSize: 48,
       color: '#D45A01',
       marginBottom: 60, // Adjust as per your design spacing
+      // marginTop: 60, // Adjust as per your design spacing
     },
     inputGroup: {
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: 20,
+      marginHorizontal: 35, // Adjust as per your design spacing
     },
     input: {
       flex: 1,
       height: 58, // Adjust height as per your design
       backgroundColor: 'rgba(133, 57, 2, 0.75)',
-      borderRadius: 10,
+      borderRadius: 20,
       paddingLeft: 50, // Adjust based on your icon size and padding needs
-      fontFamily: 'Urbanist-Medium',
+      fontFamily: 'UrbanistMedium',
       fontSize: 17,
       color: '#C4C4C4',
       marginRight: 0, // If you need space between input and screen edge
@@ -40,6 +46,7 @@ export const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       marginBottom: 30, // Adjust as per your design spacing
+      marginTop: 10,
     },
     checkbox: {
       width: 24,
@@ -57,8 +64,8 @@ export const styles = StyleSheet.create({
       
     },
     rememberMeLabel: {
-      fontFamily: 'Urbanist-Medium',
-      fontSize: 17,
+      fontFamily: 'UrbanistMedium',
+      fontSize: 15,
       color: '#C4C4C4',
     },
     loginBtn: {
@@ -70,9 +77,9 @@ export const styles = StyleSheet.create({
       marginBottom: 20, // Adjust as per your design spacing
     },
     loginBtnText: {
-      fontFamily: 'Urbanist-Bold',
+      fontFamily: 'UrbanistBold',
       fontSize: 17,
-      color: '#fff',
+      color: '#C4C4C4',
     },
     googleContainer: {
       flexDirection: 'column',
@@ -80,7 +87,7 @@ export const styles = StyleSheet.create({
       marginBottom: 20,
     },
     continueWithText: {
-      fontFamily: 'Urbanist-Medium',
+      fontFamily: 'UrbanistMedium',
       fontSize: 17,
       color: '#C4C4C4',
       marginBottom: 10,
@@ -92,6 +99,7 @@ export const styles = StyleSheet.create({
       borderRadius: 16,
       justifyContent: 'center',
       alignItems: 'center',
+      marginTop:20,
     },
     googleIcon: {
       width: 24,
@@ -103,12 +111,12 @@ export const styles = StyleSheet.create({
       marginTop: 20, // Adjust as per your design spacing
     },
     signUpText: {
-      fontFamily: 'Urbanist-Regular',
+      fontFamily: 'UrbanistRegular',
       fontSize: 14,
       color: '#C4C4C4',
     },
     signUpLink: {
-      fontFamily: 'Urbanist-Bold',
+      fontFamily: 'UrbanistBold',
       fontSize: 14,
       color: '#D45A01',
     },

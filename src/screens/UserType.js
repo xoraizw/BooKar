@@ -8,7 +8,7 @@ const SignupScreen = () => {
   const navigation = useNavigation();
 
   const handleNext = () => {
-    navigation.navigate('SignUp1');
+    navigation.navigate('SignUp1', { userType: userType });
   };
 
   return (
@@ -20,39 +20,39 @@ const SignupScreen = () => {
         <View style={{ flexDirection: 'row', justifyContent: 'space-around' }}>
 
           <TouchableOpacity
-            onPress={() => setUserType('Guest')}
-            style={[styles.touchableOpacity, userType === 'Guest' && styles.selected]}
+            onPress={() => setUserType('Player')}
+            style={[styles.touchableOpacity, userType === 'Player' && styles.selected]}
           >
             <Image
-              source={require('../../assets/images/xxxxx.jpg')}
+              source={require('../../assets/images/playeroption.png')}
               // source={require('../assets/images/xxxxx.jpg')}
               style={[
                 styles.icon,
                 { width: 138, height: 140 },
-                userType === 'Guest' && styles.selectedImage,
+                userType === 'Player' && styles.selectedImage,
               ]}
             />
           </TouchableOpacity>
           <TouchableOpacity
-          onPress={() => setUserType('Host')}
+          onPress={() => setUserType('Owner')}
           style={[
             styles.touchableOpacity,
-            userType === 'Host' && styles.selected,
+            userType === 'Owner' && styles.selected,
             { backgroundColor: 'transparent' } // Set background color to transparent
           ]}
         >
           <Image
-            source={require('../../assets/images/xxxx.jpg')}
+            source={require('../../assets/images/owneroption.png')}
             style={[
               styles.icon,
               { width: 138, height: 140 },
-              userType === 'Host' && styles.selectedImage,
+              userType === 'Owner' && styles.selectedImage,
             ]}
           />
         </TouchableOpacity>
         </View>
       </View>
-      {userType === 'Host' || userType === 'Guest' ? (
+      {userType === 'Owner' || userType === 'Player' ? (
         <TouchableOpacity
           onPress={handleNext}
           style={[styles.nextButton, { backgroundColor: '#D45A01', borderRadius: 26.5 }]}

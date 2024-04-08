@@ -3,7 +3,10 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image } from 'react
 import { Ionicons } from '@expo/vector-icons';
 import { useFonts } from 'expo-font';
 import { Modal } from 'react-native';
-import { styles } from '../../assets/styles/recentlybookedStyles'
+import { styles } from '../../assets/styles/recentlybookedStyles';
+import {ipAddr} from './ipconfig.js';
+
+
 
 export default function RecentlyBooked({ navigation, route }) {
     const { email } = route.params;
@@ -43,7 +46,7 @@ export default function RecentlyBooked({ navigation, route }) {
     }, []);
     const fetchMyBookings = async () => {
       try {
-        const response = await fetch(`http://192.168.100.15:3000/my-bookings?userEmail=${route.params.email}`);
+        const response = await fetch(`http://${ipAddr}:3000/my-bookings?userEmail=${route.params.email}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }

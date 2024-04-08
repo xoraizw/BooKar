@@ -6,6 +6,7 @@ import { styles } from '../../assets/styles/homepageStyles';
 import SearchField from '../screens/Search';
 import ImageBox from './ImageBox';
 import { Buffer } from 'buffer'; 
+import {ipAddr} from './ipconfig';
 
 export default function HomePage({ route, navigation }) {
   const { emailProp } = route.params;
@@ -40,7 +41,7 @@ export default function HomePage({ route, navigation }) {
 
   const userDetails = async () => {
     try {
-      const response = await fetch(`http://192.168.100.15:3000/get-user?userEmail=${emailProp}`);
+      const response = await fetch(`http://${ipAddr}:3000/get-user?userEmail=${emailProp}`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -53,7 +54,7 @@ export default function HomePage({ route, navigation }) {
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch('http://192.168.100.15:3000/get-companies');
+      const response = await fetch(`http://${ipAddr}:3000/get-companies`);
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
@@ -63,10 +64,6 @@ export default function HomePage({ route, navigation }) {
       console.error('Error fetching companies:', error);
     }
   };
-
-  
-
-
 
   const handleTabPress = (tabName) => {
     if (tabName === selectedTab) {

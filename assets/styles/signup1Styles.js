@@ -30,32 +30,19 @@ export const styles = StyleSheet.create({
     acceptText: {
       color: '#fff',
       fontSize: 16,
-      fontFamily: 'Urbanist', // Make sure this font is linked in your project
+      fontFamily: 'UrbanistRegular', // Make sure this font is linked in your project
     },
     termsText: {
       color: '#D45A01',
       fontSize: 16,
-      fontFamily: 'Urbanist',
+      fontFamily: 'UrbanistRegular',
       paddingLeft: 5, // Make sure this font is linked in your project
     },
     settingYou: {
-      position: 'absolute',
-      top: 58,
-      left: 7,
       width: 286,
       height: 129, // Half of 258
       fontSize: 44.5,
-      fontFamily: 'Montserrat',
-      color: '#D45A01',
-    },
-    up: {
-      position: 'absolute',
-      top: 123, // 58 + 129
-      left: 7,
-      width: 286,
-      height: 129, // Half of 258
-      fontSize: 45,
-      fontFamily: 'Montserrat',
+      fontFamily: 'MontserratRegular',
       color: '#D45A01',
     },
     container: {
@@ -70,8 +57,7 @@ export const styles = StyleSheet.create({
       marginBottom: 10,
     },
     errorText: {
-      color: 'red',
-      marginBottom: -10,
+      color: '#C4C4C4',
     },
     inputContainer: {
       justifyContent: 'center',
@@ -110,6 +96,7 @@ export const styles = StyleSheet.create({
       borderRadius: 25,
       borderWidth: 2,
       borderColor: '#FF6347', // Orange color from Screen1
+      marginBottom: 40,
       width: '99%', // Adjusted width to fit the screen
     },
     buttonBackground: {
@@ -118,7 +105,7 @@ export const styles = StyleSheet.create({
     buttonText: {
       color: '#C4C4C4',
       textAlign: 'center',
-      fontFamily: 'Urbanist',
+      fontFamily: 'UrbanistSemiBold',
       fontSize: 17, // Urbanist font
     },
   });
