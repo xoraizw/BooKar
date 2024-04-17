@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView, SafeAreaView, FlatList } from 'react-native'; // Import FlatList component
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity, ScrollView, SafeAreaView, FlatList } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
 import { styles } from '../../assets/styles/homepageStyles';
@@ -32,11 +32,42 @@ export default function HomePage({ route, navigation }) {
 
   useEffect(() => {
     fetchCompanies();
+    fetchMyBookings();
     userDetails();
   }, []);
   
   const handlePillPress = (pill) => {
     setSelectedPill(pill);
+    setCompanies([...companies.reverse()]);
+  };
+
+  const fetchMyBookings = async () => {
+    try {
+      const response = await fetch(`http://${ipAddr}:3000/my-bookings?userEmail=${emailProp}`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      
+      // console.log("jiiii")
+      
+      // Remove duplicate bookings based on email
+      const uniqueBookings = [];
+      const emailSet = new Set();
+      data.forEach(booking => {
+        if (!emailSet.has(booking.User_Email)) {
+          uniqueBookings.push(booking);
+          emailSet.add(booking.User_Email);
+        }
+      });
+  
+      setBookings(uniqueBookings);
+      setShowBookings(true);
+      console.log(uniqueBookings)
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+    }
   };
 
   const userDetails = async () => {
@@ -59,7 +90,29 @@ export default function HomePage({ route, navigation }) {
         throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      setCompanies(data);
+  
+      // Fetch reviews for each company
+      const companiesWithReviews = await Promise.all(data.map(async (company) => {
+        try {
+          const response = await fetch(`http://${ipAddr}:3000/reviewRating?email=${encodeURIComponent(company.Email)}`);
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          const reviewData = await response.json();
+          return {
+            ...company,
+            avgRating: isNaN(reviewData.averageRating) ? 0 : reviewData.averageRating,
+          }; // Return the average rating from the response
+        } catch (error) {
+          console.error('Error fetching average rating:', error);
+          return {
+            ...company,
+            avgRating: 0, // Return a default value in case of error
+          };
+        }
+      }));
+  
+      setCompanies(companiesWithReviews)
     } catch (error) {
       console.error('Error fetching companies:', error);
     }
@@ -81,7 +134,7 @@ export default function HomePage({ route, navigation }) {
           <View style={styles.header}>
             <View style={styles.logoContainer}>
               <Image source={require('../../assets/images/Logo.png')} style={styles.logo} />
-              <Text style={styles.logoText}>BookKar</Text>
+              <Text style={styles.logoText}>BooKar</Text>
             </View>
             <TouchableOpacity onPress={() => {
               // handleTabPress('Notifications');
@@ -99,6 +152,7 @@ export default function HomePage({ route, navigation }) {
               handleTabPress('search');
               navigation.navigate('Search', {
                 emailPassed: emailProp,
+                currentUser: user
               });
             }}
           >
@@ -147,8 +201,47 @@ export default function HomePage({ route, navigation }) {
               onPress={() => handlePillPress('Book Again')}
             />
           </ScrollView>
-          <ScrollView horizontal contentContainerStyle={styles.imageContainer}>
+          <ScrollView horizontal contentContainerStyle={[styles.imageContainer, { width: companies.length * (266 + 21) } ]}>
           {companies.map(company => {
+            if (company.Image && company.Image.data) {
+            // Convert Buffer object to base64-encoded string
+            const base64Image = Buffer.from(company.Image.data).toString('base64');
+
+            // Use base64-encoded string as the URI for Image component
+            return (
+              <ImageBox
+                key={company._id}
+                imageSource={base64Image ? { uri: `data:image/png;base64,${base64Image}` } : require('../../assets/images/image_2.png')}
+                title={company.Company_Name}
+                location={company.Location}
+                price={company.Email}
+                rating={company.avgRating}
+                navigation={navigation} 
+                onPress={() => {
+                  navigation.navigate('FieldProfile', {
+                    currcompany: company,
+                    user_email: emailProp,    
+                    currentUser: user                  
+                  });
+                }}
+              />
+            );
+          } else {
+            return null; // Return null or a placeholder if company.Image is not defined
+          }
+        })}
+
+          </ScrollView>
+          <View style={styles.recentlyBookedContainer}>
+            <Text style={styles.recentlyBookedText}>Recently Booked</Text>
+            <TouchableOpacity style={styles.seeAllButton} onPress={() => navigation.navigate('RecentlyBooked', {email: emailProp,})}>
+              <Text style={styles.seeAllButtonText}>See All</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView horizontal contentContainerStyle={[styles.imageContainer,{ width: 2.1 * (266 + 21) } ]}>
+          {companies
+            .filter(company => bookings.some(booking => booking.Company_Email === company.Email))
+            .map(company => {
             // Convert Buffer object to base64-encoded string
             const base64Image = Buffer.from(company.Image.data).toString('base64');
             
@@ -160,78 +253,54 @@ export default function HomePage({ route, navigation }) {
                 title={company.Company_Name}
                 location={company.Location}
                 price={company.Email}
-                rating={company.Contact_Name}
+                rating={company.avgRating}
                 navigation={navigation} 
                 
                 onPress={() => {
                  navigation.navigate('FieldProfile', {
-                      companyName: company.Company_Name,
-                      companyLocation: company.Location,
-                      companyEmail: company.Email,
-                      companyContactName: company.Contact_Name,
+                      currcompany: company,
                       email: emailProp,    
                       currentUser: user                  
                   });}}
                   />
             );
           })}
-
-          </ScrollView>
-          <View style={styles.recentlyBookedContainer}>
-            <Text style={styles.recentlyBookedText}>Recently Booked</Text>
-            <TouchableOpacity style={styles.seeAllButton} onPress={() => navigation.navigate('RecentlyBooked', {email: emailProp,})}>
-              <Text style={styles.seeAllButtonText}>See All</Text>
-            </TouchableOpacity>
-          </View>
-          <ScrollView horizontal contentContainerStyle={styles.imageContainer}>
-          {companies.map(company => (
-            <ImageBox
-              key={company._id}
-              imageSource={require('../../assets/images/image_2.png')} // Hard-coded image source
-              title={company.Company_Name} // Display company name as title
-              location={company.Location} // Display company location
-              price={company.Email} // Display company location
-              rating={company.Contact_Name} // Display company location
-              onPress={() => {
-                // Handle click for first image
-              }}
-              // Pass any remaining details fetched for each company as props
-            />
-          ))}
           </ScrollView>
         </ScrollView>
+        <View style={{ height: 40 }} />
       </View>
       <View style={styles.navbar}>
         <TouchableOpacity
-          style={selectedTab === 'home' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress={() => handleTabPress('home')}
         >
           <Ionicons
-            name={selectedTab === 'home' ? 'home' : 'home-outline'}
+            name={'home'}
             size={24}
-            color={selectedTab === 'home' ? '#D45A01' : '#7D7D7D'}
+            color={'#D45A01'}
           />
           <Text style={styles.navbarText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={selectedTab === 'search' ? styles.navbarTabSelected : styles.navbarTab}
+          style={ styles.navbarTab}
           onPress={() => {
             handleTabPress('search');
             navigation.navigate('Search');
             navigation.navigate('Search', {
               emailPassed: emailProp,
+              currentUser: user
             }); // Navigate to the Search page
           }}
         >
           <Ionicons
-            name={selectedTab === 'search' ? 'search' : 'search-outline'}
+            name={'search'}
             size={24}
-            color={selectedTab === 'search' ? '#D45A01' : '#7D7D7D'}
+            color={'#7D7D7D'}
           />
           <Text style={styles.navbarText}>Search</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={selectedTab === 'list' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress={() => {
             handleTabPress('list');
             // navigation.navigate('UserProfile');
@@ -241,14 +310,14 @@ export default function HomePage({ route, navigation }) {
             })}} // Navigate to the Search page
         >
           <Ionicons
-            name={selectedTab === 'list' ? 'list' : 'list-outline'}
+            name={'list'}
             size={24}
-            color={selectedTab === 'list' ? '#D45A01' : '#7D7D7D'}
+            color={'#7D7D7D'}
           />
           <Text style={styles.navbarText}>Bookings</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={selectedTab === 'person' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress={() => {
             handleTabPress('person');
             // navigation.navigate('UserProfile');
@@ -259,9 +328,9 @@ export default function HomePage({ route, navigation }) {
           }}
         >
           <Ionicons
-            name={selectedTab === 'person' ? 'person' : 'person-outline'}
+            name={'person'}
             size={24}
-            color={selectedTab === 'person' ? '#D45A01' : '#7D7D7D'}
+            color={'#7D7D7D'}
           />
           <Text style={styles.navbarText}>Profile</Text>
         </TouchableOpacity>
@@ -284,4 +353,3 @@ const PillButton = ({ text, size, isSelected, onPress }) => {
     </TouchableOpacity>
   );
 };
-

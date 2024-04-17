@@ -39,7 +39,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 16,
-        backgroundColor: '#00170C', // Adjust the background color as needed
+        backgroundColor: '#000000', // Adjust the background color as needed
       },
       logo: {
         width: 50, // Adjust the size as needed
@@ -64,6 +64,7 @@ export const styles = StyleSheet.create({
       marginLeft: 8,},
   
     pillContainer: {
+      height: 60,
       flexDirection: 'row',
       justifyContent: 'center',
       paddingVertical: 8,
@@ -72,6 +73,7 @@ export const styles = StyleSheet.create({
     pill: {
       // General pill styles
       minWidth: 110,
+      height: 40,
       paddingVertical: 8,
       paddingHorizontal: 20,
       marginHorizontal: 5,
@@ -182,13 +184,19 @@ export const styles = StyleSheet.create({
       paddingVertical: 4,
       paddingHorizontal: 8,
       marginTop: 4,
-      alignSelf: 'flex-start',
+      alignSelf: 'center',
+      width:'100%'
   
     },
     tagText: {
       fontFamily: 'UrbanistRegular',
       fontSize: 12,
       color: '#FF7878',
+      width:'100%',
+      alignSelf: 'center',
+      paddingHorizontal:20,
+      textAlign:'center',
+      marginBottom: 5
     },
     bottomTagContainer: {
       backgroundColor: '#35383F',
@@ -304,5 +312,23 @@ export const styles = StyleSheet.create({
       color: '#FFFFFF',
       textAlign: 'center',
     },
+    canceledText: {
+      fontFamily: 'UrbanistRegular',
+      fontSize: 12,
+      color: '#000000',
+    },
+    cancelContainer: {
+      backgroundColor: '#FF7878',
+      borderRadius: 6,
+      paddingVertical: 4,
+      paddingHorizontal: 8,
+      marginTop: 4,
+      alignSelf: 'flex-start',
+    },
+    tagContainer1:{
+      alignSelf: 'flex-start',
+      marginTop: 20,
+      marginLeft: -18 
+    }
     
   });

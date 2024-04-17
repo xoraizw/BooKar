@@ -3,21 +3,46 @@
   import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
   import icon from 'react-native-vector-icons/FontAwesome'; 
   import { Button } from 'react-native';
-  import React, { useState } from 'react'; // Import useState
-  import { useNavigation } from '@react-navigation/native'; // Import useNavigation from React Navigation
+  import React, { useState, useEffect } from 'react'; // Import useState
+  import { useNavigation, StackActions } from '@react-navigation/native';
+  import { Ionicons } from '@expo/vector-icons';
+  import {ipAddr} from './ipconfig.js';
 
 
 
 export default function UserProfileScreen({ route }) {
     const {email, name} = route.params;
     const [selectedTab, setSelectedTab] = useState('search');
+    const [user, setUser] = useState({});
   
     const navigation = useNavigation();
   
     const navigateToHome = () => {
       navigation.navigate('HomePage');
     };
+
+    const handleLogout = () => {
+      // Reset the navigation stack to the Login screen
+      navigation.navigate('Login');
+      navigation.dispatch(StackActions.replace('Login'));
+    };
+    
       
+    const userDetails = async () => {
+      try {
+        const response = await fetch(`http://${ipAddr}:3000/get-user?userEmail=${email}`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setUser(data);
+      } catch (error) {
+        console.error('Error fetching user details:', error);
+      }
+    };
+    useEffect(() => {
+      userDetails();
+    }, []);
     const handleTabPress = (tabName) => {
       if (tabName === selectedTab) {
         setSelectedTab(null);
@@ -35,12 +60,6 @@ export default function UserProfileScreen({ route }) {
           />
           <Text style={styles.profileTitle}>Profile</Text>
         </View>
-        <TouchableOpacity onPress={() => console.log('Image button pressed')}>
-          <Image
-            source={require('../../assets/images/gggg.png')} // Replace with the path to your button image
-            style={styles.imageButton}
-          />
-        </TouchableOpacity>
       </View>
       <ScrollView style={styles.container}>
 
@@ -61,57 +80,85 @@ export default function UserProfileScreen({ route }) {
       <Icon name="account-edit" size={20} color="#C4C4C4" />
       <Text style={styles.buttonText}>Edit Profile</Text>
     </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Icon name="credit-card" size={20} color="#C4C4C4" />
-          <Text style={styles.buttonText}>Payment</Text>
-        </TouchableOpacity>
+        
         {/* Additional buttons */}
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity style={styles.button} onPress={() => {
+              navigation.navigate('Notifications', {
+              email : email,
+              }); // Navigate to the Profile page
+          }}>
           <Icon name="bell-outline" size={20} color="#C4C4C4" />
           <Text style={styles.buttonText}>Notifications</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Icon name="lock-outline" size={20} color="#C4C4C4" />
-          <Text style={styles.buttonText}>Security</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Icon name="help-circle-outline" size={20} color="#C4C4C4" />
-          <Text style={styles.buttonText}>Help</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.buttonLogout}>
+        <TouchableOpacity style={styles.buttonLogout} onPress={handleLogout}>
           <Icon name="logout" size={20} color="#FF3B30" />
           <Text style={[styles.buttonText, styles.buttonTextLogout]}>Logout</Text>
         </TouchableOpacity>
-        {/* Tab Bar Icons */}
-        {/* ...Your tab bar here */}
-              {/* Bottom Tab Bar */}
       </ScrollView>
-
-      <View style={styles.tabBar}>
-        <TouchableOpacity style={styles.tabItem} 
-          onPress= {() => {
-            handleTabPress('home');
+      <View style={{ height: 50 }} />
+      <View style={styles.navbar}>
+        <TouchableOpacity
+            style={selectedTab === 'home' ? styles.navbarTabSelected : styles.navbarTab}
+            onPress={() => {handleTabPress('home');
+            navigation.navigate('HomePage');
             navigation.navigate('HomePage', {
-              emailProp: email,
-            });
-          }}
+                emailProp: email, });
+            }}
+          >
+            <Ionicons
+              name={'home'}
+              size={24}
+              color={'#7D7D7D'}
+            />
+            <Text style={styles.navbarText}>Home</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.navbarTab}
+            onPress={() => {
+              handleTabPress('search');
+              navigation.navigate('Search');
+              navigation.navigate('Search', {
+                emailPassed: email,
+                currentUser: user
+              }); // Navigate to the Search page
+            }}
+          >
+            <Ionicons
+              name={'search'}
+              size={24}
+              color={'#7D7D7D'}
+            />
+            <Text style={styles.navbarText}>Search</Text>
+          </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navbarTab}
+          onPress={() => {
+            handleTabPress('list');
+            // navigation.navigate('UserProfile');
+            navigation.navigate('MyBookings', {
+              email: email,    
+              currentUser: user         
+            })}} // Navigate to the Search page
         >
-            <Icon name="home-outline" size={24} color="#7D7D7D" />
-            <Text style={styles.tabTitle}>Home</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-            <Icon name="magnify" size={24} color="#7D7D7D" />
-            <Text style={styles.tabTitle}>Search</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-            <Icon name="bookmark-outline" size={24} color="#7D7D7D" />
-            <Text style={styles.tabTitle}>Booking</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.tabItem}>
-            <Icon name="account-outline" size={24} color="#D45A01" />
-            <Text style={styles.tabTitle}>Profile</Text>
-          </TouchableOpacity>
-        </View>
+          <Ionicons
+            name={'list'}
+            size={24}
+            color={'#7D7D7D'}
+          />
+          <Text style={styles.navbarText}>Bookings</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navbarTab}
+          onPress={() => handleTabPress('person')}
+        >
+          <Ionicons
+            name={'person'}
+            size={24}
+            color={'#D45A01'}
+          />
+          <Text style={styles.navbarText}>Profile</Text>
+        </TouchableOpacity>
+      </View>
       </SafeAreaView>
     );
   };
@@ -125,7 +172,7 @@ export default function UserProfileScreen({ route }) {
       backgroundColor: '#00170C',
     },
     header: {
-      paddingLeft: 20, // Aligns title to the left
+      paddingLeft: 10, // Aligns title to the left
       paddingVertical: 16,
     },
     headerTitle: {
@@ -140,26 +187,29 @@ export default function UserProfileScreen({ route }) {
     avatar: {
       width: 130,
       height: 130,
+      marginTop:-30,
       borderRadius: 40,
+      marginBottom:-40,
     },
     userName: {
       color: '#FFF',
       fontSize: 24,
       fontFamily: 'Urbanist-Bold',
-      marginTop: 8,
+      marginTop: 40,
     },
     userEmail: {
       color: '#D45A01',
       fontSize: 14,
-      fontFamily: 'Urbanist', // Or 'Urbanist-Regular' if available
+      fontFamily: 'UrbanistRegular', // Or 'Urbanist-Regular' if available
       marginTop: 4,
-      marginBottom: 86,
+      marginBottom: 50,
     },
     button: {
       flexDirection: 'row',
       alignItems: 'center',
       padding: 20,
       paddingBottom: 16,
+      marginLeft : 15,
       
       // borderBottomWidth: 1,
       // borderBottomColor: '#303030',
@@ -174,6 +224,7 @@ export default function UserProfileScreen({ route }) {
       flexDirection: 'row',
       alignItems: 'center',
       padding: 20,
+      marginLeft : 15,
       
     },
     buttonTextLogout: {
@@ -222,6 +273,36 @@ export default function UserProfileScreen({ route }) {
       top: -46, // Adjust as needed
       right: 10
     },
-    // ...other styles
+    navbar: {
+      flexDirection: 'row',
+      justifyContent: 'space-around',
+      alignItems: 'center',
+      width: '100%',
+      height: '10%',
+      backgroundColor: '#00170C',
+      marginTop:30,
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      borderTopLeftRadius: 12,
+      borderTopRightRadius: 12,
+      borderColor: 'black',
+      borderWidth: 3, 
+    },
+    navbarTab: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    navbarTabSelected: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      color: 'orange',
+    },
+    navbarText: {
+      fontSize: 10,
+      marginTop: 4,
+      color: '#C4C4C4',
+    }
   });
 

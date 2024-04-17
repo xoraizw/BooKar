@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+// import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { Image} from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import AppLoading from 'expo-app-loading';
@@ -31,16 +33,23 @@ import MyBookings from './src/screens/MyBookings';
 import Notifications from './src/screens/Notifications';
 
 import OwnerHomepage from './src/screens/Owner_Landing';
-import OwnerBookings from './src/screens/OwnerBookings'
-import ManageListingsOwner from './src/screens/Manage_Listings';
+import OwnerBookings from './src/screens/OwnerBookings';
 import UpdateListingsOwner from './src/screens/Update_Listing';
 import UpdatePricingOwner from './src/screens/Update_Pricing_Capacity';
 import UploadImages from './src/screens/Upload_Images';
 import CreateListingOwner from './src/screens/Create_Listing';
 import CreateSuccess from './src/screens/CreateSuccess';
 import OwnerInventory from './src/screens/OwnerInventory';
-import StatScreen from './src/screens/Stats'
-import OwnerReview from './src/screens/OwnerReview'
+import StatScreen from './src/screens/Stats';
+import OwnerReview from './src/screens/OwnerReview';
+import OwnerListingProfile from './src/screens/OwnerListingProfile';
+
+
+import ManageListingsOwner from './src/screens/Manage_Listings';
+import UpdateListing from './src/screens/Update_Listing';
+import UpdatePricing from './src/screens/update_pricing_capacity_manage'
+import UploadImage from './src/screens/upload_images_manage'
+import UploadPayment from './src/screens/payment_screen'
 
 const Stack = createNativeStackNavigator();
 
@@ -59,30 +68,42 @@ const fetchFonts = () => {
     'MontserratRegular': require('./assets/fonts/Montserrat/static/Montserrat-Regular.ttf'),
     'MontserratSemiBold': require('./assets/fonts/Montserrat/static/Montserrat-SemiBold.ttf'),
     'MontserratMedium': require('./assets/fonts/Montserrat/static/Montserrat-Medium.ttf'),
-  });
+  }).then(() => console.log('Fonts loaded!'))
+  .catch(e => console.error('Error loading fonts', e));
 };
 
 export default function App() {
-  const [fontsLoaded, setFontsLoaded] = useState(false);
 
-  if (!fontsLoaded) {
-    return (
-      <AppLoading
-        startAsync={fetchFonts}
-        onFinish={() => setFontsLoaded(true)}
-        onError={console.warn}
-      />
-    );
+  const [appIsReady, setAppIsReady] = useState(false);
+
+  useEffect(() => {
+    async function prepare() {
+      try {
+        await Promise.all([
+          fetchFonts(),
+        ]);
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        // setAppIsReady(true);
+        setTimeout(() => setAppIsReady(true), 5000);
+      }
+    }
+  
+    prepare();
+  }, []);
+  
+  const onAnimationComplete = () => {
+    setAppIsReady(true);
+  };
+  
+  if (!appIsReady) {
+    return <LoadingScreen onAnimationComplete={onAnimationComplete} />;
   }
-
+  
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="Loading"
-          component={LoadingScreen}
-          options={{ headerShown: false }}
-        />
         <Stack.Screen
           name="Login"
           component={Login}
@@ -111,12 +132,12 @@ export default function App() {
         <Stack.Screen 
           name="HomePage" 
           component={HomePage} 
-          options={{ headerShown: false }}
+          options={{ headerShown: false, animation: 'none'}}
         />
         <Stack.Screen 
           name="Search" 
           component={Search} 
-          options={{ headerShown: false }}
+          options={{ headerShown: false ,animation: 'none'}}
         />
         <Stack.Screen
           name="RecentlyBooked"
@@ -131,7 +152,7 @@ export default function App() {
         <Stack.Screen
           name="UserProfile"
           component={UserProfile}
-          options={{ headerShown: false }}
+          options={{ headerShown: false ,animation: 'none'}}
           />
         <Stack.Screen
           name="EditProfile"
@@ -156,7 +177,7 @@ export default function App() {
         <Stack.Screen
           name="MyBookings"
           component={MyBookings}
-          options={{ headerShown: false }}
+          options={{ headerShown: false ,animation: 'none'}}
         />
         <Stack.Screen
           name="Notifications"
@@ -166,7 +187,7 @@ export default function App() {
         <Stack.Screen
           name="OwnerHomepage"
           component={OwnerHomepage}
-          options={{ headerShown: false }}
+          options={{ headerShown: false ,animation: 'none'}}
         />
         <Stack.Screen
           name="ManageListingsOwner"
@@ -174,18 +195,23 @@ export default function App() {
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="UpdateListingsOwner"
-          component={UpdateListingsOwner}
+          name="UpdateListing"
+          component={UpdateListing}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="UpdatePricingOwner"
-          component={UpdatePricingOwner}
+          name="UpdatePricing"
+          component={UpdatePricing}
           options={{ headerShown: false }}
         />
         <Stack.Screen
-          name="UploadImages"
-          component={UploadImages}
+          name="UploadImage"
+          component={UploadImage}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UploadPayment"
+          component={UploadPayment}
           options={{ headerShown: false }}
         />
         <Stack.Screen
@@ -201,21 +227,41 @@ export default function App() {
         <Stack.Screen
           name="OwnerInventory"
           component={OwnerInventory}
-          options={{ headerShown: false }}
+          options={{ headerShown: false ,animation: 'none'}}
         />
         <Stack.Screen
           name="OwnerBookings"
           component={OwnerBookings}
-          options={{ headerShown: false }}
+          options={{ headerShown: false ,animation: 'none'}}
         />
         <Stack.Screen
           name="StatScreen"
           component={StatScreen}
-          options={{ headerShown: false }}
+          options={{ headerShown: false ,animation: 'none'}}
         />
         <Stack.Screen
           name="OwnerReview"
           component={OwnerReview}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="OwnerListingProfile"
+          component={OwnerListingProfile}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UpdateListingsOwner"
+          component={UpdateListingsOwner}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UpdatePricingOwner"
+          component={UpdatePricingOwner}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UploadImages"
+          component={UploadImages}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

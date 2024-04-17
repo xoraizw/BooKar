@@ -1,113 +1,121 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView,Image } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Make sure to install this package
-import { useNavigation } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Image } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { useNavigation, useRoute } from '@react-navigation/native';
 
-const PricingAndCapacitiesScreen = ({route}) => {
-  const {
-    email,
-    name,
-    address,
-    description,
-    servicesArray, // Renamed to match your requirement
-    facilities,
-    location,
-    openHours,
-  } = route.params;
-
-  // Use servicesArray from props and add state to each for user input
-  const [services, setServices] = useState(servicesArray.map(service => ({
-    ...service,
-    hourlyRate: '', // Initialize with empty string for input
-    fieldCount: service.fieldCount, // Use fieldCount from passed service object
-  })));
+const PricingAndCapacitiesScreen = () => {
+  const [services, setServices] = useState([]);
+  const [newRate, setNewRate] = useState(null);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const navigation = useNavigation();
+  const route = useRoute();
+  const { listingData: initialListingData , ogname, user } = route.params;
+  const [listingData, setListingData] = useState(initialListingData);
 
-  const updateServiceField = (serviceName, field, value) => {
+  useEffect(() => {
+    if (listingData && listingData.services) {
+      setServices(listingData.services.map((service, index) => ({
+        id: index + 1,
+        service: service.service || '',
+        hourlyRate: service.hourlyRate || '',
+        numberOfFields: service.fieldCount || 3,
+        boxValue: service.boxValue || '',
+      })));
+      setIsDataLoaded(true);
+    }
+  }, [listingData]);
+
+  const updateServiceField = (id, field, value) => {
     setServices(services.map(service => {
-      if (service.service === serviceName) {
+      if (service.id === id) {
         return { ...service, [field]: value };
       }
       return service;
     }));
   };
 
-  const renderServiceSection = (service, index) => {
-    const handleInputChange = (field, text) => {
-      // Update the service's hourlyRate or fieldCount based on input
-      updateServiceField(service.service, field, text);
-    };
+  const handleInputChange = (field, text, serviceId) => {
+    if (!isNaN(text)) {
+      setServices(prevServices =>
+        prevServices.map(service =>
+          service.id === serviceId ? { ...service, [field]: text } : service
+        )
+      );
+
+      const updatedServices = listingData.services.map(service => {
+        if (service.service === serviceId) {
+          service.hourlyRate = text;
+        }
+        return service;
+      });
+      
+      setListingData(prevListingData => ({
+        ...prevListingData,
+        services: updatedServices
+      }));
+    }
+  };
   
+  const renderServiceSection = (service) => {
     return (
-      <View key={index} style={styles.serviceSection}>
-        <Text style={styles.label}>Set Hourly Rate For {service.service}:</Text>
+      <View key={service.id} style={styles.serviceSection}>
+        <Text style={styles.label2}>Set Hourly Rate For {service.service}:</Text>
         <View style={styles.pkrContainer}>
           <Text style={styles.pkrText}>PKR</Text>
           <TextInput
-            style={styles.line}
+            style={[styles.line, { fontSize: 18, color: 'white' }]}
             keyboardType="numeric"
-            value={service.hourlyRate}
-            onChangeText={text => handleInputChange('hourlyRate', text)}
+            defaultValue={service.hourlyRate}
+            onChangeText={text => handleInputChange('hourlyRate', text, service.service)}
           />
         </View>
-        <Text style={styles.label}>Set number of fields for {service.service}:</Text>
+
+        <View style={styles.boxContainer}>
+          <Text style={styles.boxLabel}>Box</Text>
+          <TextInput
+            style={styles.boxInput}
+            keyboardType="numeric"
+            onChangeText={text => updateServiceField(service.id, 'boxValue', text)}
+            value={service.boxValue}
+            placeholder="Box"
+          />
+        </View>
+        
+        <Text style={styles.label}>Set number of fields for selected service {service.service}:</Text>
         <View style={styles.counterContainer}>
           <TouchableOpacity
             style={styles.counterButton}
-            onPress={() => updateServiceField(service.service, 'fieldCount', Math.max(1, service.fieldCount - 1))}
+            onPress={() => updateServiceField(service.id, 'numberOfFields', Math.max(0, service.numberOfFields + 1))}
           >
-            <Icon name="minus" size={24} color="#C4C4C4" />
+            <Icon name="plus" size={8} color="#C4C4C4" />
           </TouchableOpacity>
-          <Text style={styles.counterText}>{service.fieldCount}</Text>
+          <Text style={styles.counterText}>{service.numberOfFields}</Text>
           <TouchableOpacity
             style={styles.counterButton}
-            onPress={() => updateServiceField(service.service, 'fieldCount', service.fieldCount + 1)}
+            onPress={() => updateServiceField(service.id, 'numberOfFields', Math.max(0, service.numberOfFields - 1))}
           >
-            <Icon name="plus" size={24} color="#C4C4C4" />
+            <Icon name="minus" size={8} color="#C4C4C4" />
           </TouchableOpacity>
         </View>
       </View>
     );
   };
 
-  // Add this function to your component
-  handleInputChange = (text) => {
-    // Make sure the input is a number
-    if (!isNaN(text)) {
-      this.setState({ input: text });
-    }
-  };
-
-
   return (
-    
     <ScrollView style={styles.container}>
       <View style={styles.header}>
-        {/* Assuming you're using react-navigation */}
-        <TouchableOpacity onPress={() => navigation.goBack()}>
+        <TouchableOpacity onPress={() => navigation.goBack(listingData , ogname)}>
           <Icon name="arrow-left" size={25} color="#C4C4C4" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Pricing & Capacities</Text>
       </View>
-
       {services.map(renderServiceSection)}
       <Image source={require('../../assets/images/bar2.png')} style={styles.barImage} />
-      <TouchableOpacity 
-        style={styles.continueButton}
-        onPress={() => navigation.navigate('UploadImages', {
-          email,
-          name,
-          address,
-          description,
-          services, // Updated services array with user inputs
-          facilities,
-          location,
-          openHours,
-        })}
-      >
-        <Text style={styles.continueButtonText}>Continue</Text>
-      </TouchableOpacity>
+      {isDataLoaded && listingData &&
+        <TouchableOpacity style={styles.continueButton} onPress={() => navigation.navigate('UploadImage', { listingData: listingData, ogname: ogname})}>
+          <Text style={styles.continueButtonText}>Continue</Text>
+        </TouchableOpacity>}
     </ScrollView>
   );
 };

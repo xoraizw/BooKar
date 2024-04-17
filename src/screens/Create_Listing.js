@@ -1,7 +1,6 @@
 import React from 'react';
 import { ScrollView,Button,Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Image} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Make sure to install this package
-import MapView from 'react-native-maps'; // Make sure to install this package
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Make sure to install this package=
 import  { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
@@ -149,9 +148,12 @@ const serviceIcons = {
     return (
         <ScrollView style={styles.container}>
           <View style={styles.header}>
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <Icon name="arrow-left" size={24} color="#C4C4C4" />
-            </TouchableOpacity>
+          <TouchableOpacity 
+  onPress={() => navigation.navigate('OwnerHomepage', { email: email })}
+  style={{ marginTop: 23 }}  // Add this line
+>
+  <Icon name="arrow-left" size={24} color="#C4C4C4"  />
+</TouchableOpacity>
             <Text style={styles.headerTitle}>Create A New Listing</Text>
           </View>
     
@@ -209,7 +211,7 @@ const serviceIcons = {
           style={[styles.serviceButton, selectedServices['Gaming'] ? styles.selectedService : {}]}
           onPress={() => toggleService('Gaming')}>
           <Image 
-            source={serviceIcons.Hockey} 
+            source={require('../../assets/images/game-new.png')} 
             style={[styles.serviceIcon, selectedServices['Gaming'] ? { tintColor: '#D45A01' } : {}]} />
           <Text 
             style={[styles.serviceText, selectedServices['Gaming'] ? { color: '#D45A01' } : {}]}>
@@ -288,22 +290,22 @@ const serviceIcons = {
           </Text>
         </TouchableOpacity>
         <TouchableOpacity 
-          style={[styles.serviceButton, selectedServices['Horse Riding '] ? styles.selectedService : {}]}
+          style={[styles.serviceButton, selectedServices['Horse Riding'] ? styles.selectedService : {}]}
           onPress={() => toggleService('Horse Riding ')}>
           <Image 
     source={require('../../assets/images/Trotting Horse.png')} 
-    style={[styles.serviceIcon, selectedServices['Horse Riding '] ? { tintColor: '#D45A01' } : {}]} />
+    style={[styles.serviceIcon, selectedServices['Horse Riding'] ? { tintColor: '#D45A01' } : {}]} />
           <Text 
-            style={[styles.serviceText, selectedServices['Horse Riding '] ? { color: '#D45A01' } : {}]}>
+            style={[styles.serviceText, selectedServices['Horse Riding'] ? { color: '#D45A01' } : {}]}>
             Horse Riding
           </Text>
         </TouchableOpacity>
         <TouchableOpacity 
-          style={[styles.serviceButton, selectedServices['Bowling '] ? styles.selectedService : {}]}
-          onPress={() => toggleService('Bowling ')}>
+          style={[styles.serviceButton, selectedServices['Bowling'] ? styles.selectedService : {}]}
+          onPress={() => toggleService('Bowling')}>
           <Image 
     source={require('../../assets/images/Bowling Pins.png')} 
-    style={[styles.serviceIcon, selectedServices['Bowling '] ? { tintColor: '#D45A01' } : {}]} />
+    style={[styles.serviceIcon, selectedServices['Bowling'] ? { tintColor: '#D45A01' } : {}]} />
           <Text 
             style={[styles.serviceText, selectedServices['Bowling '] ? { color: '#D45A01' } : {}]}>
             Bowling
@@ -458,27 +460,7 @@ const serviceIcons = {
         </View>
           
           <Text style={styles.sectionTitle}>Select Location</Text>
-          <MapView
-            style={styles.map}
-            initialRegion={{
-              latitude: location.coordinates[1],
-              longitude: location.coordinates[0],
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
-            }}
-            // onPress={(e) => setLocation({
-            //   ...location,
-            //   coordinates: [e.nativeEvent.coordinate.longitude, e.nativeEvent.coordinate.latitude]
-            // })}
-          >
-            {/* <MapView.Marker
-              coordinate={{
-                latitude: location.coordinates[1],
-                longitude: location.coordinates[0],
-              }}
-              title={"Your Location"}
-            /> */}
-        </MapView>
+
 <TouchableOpacity 
   onPress={() => setStartModalVisible(true)}
   style={styles.timeButton}
@@ -584,7 +566,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#C4C4C4',
-    fontFamily: 'MontserratRegular',
+    fontFamily: 'Montserrat-Regular',
     fontSize: 14,
   },
     barImage: {
@@ -602,19 +584,21 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 16,
-    fontFamily: 'MontserratRegular',
+    fontFamily: 'Montserrat-Regular',
     color: '#D45A01',
-    marginLeft: 10,
+    marginLeft: 12,
+    marginTop: 25,
   },
   input: {
     margin: 12,
+    marginRight: 38,
     fontSize: 12,
     borderBottomWidth: 0.3,
     marginBottom: 20,
     borderBottomColor: '#D45A01',
     marginHorizontal: 30, // Add this line
 
-    fontFamily: 'MontserratSemiBold',
+    fontFamily: 'Montserrat-SeimBold',
     color: '#C4C4C4',
     padding: 10, // Add this line
 
@@ -627,11 +611,11 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     color: '#C4C4C4',
-    marginLeft  : 25,
+    marginLeft  : 19,
     paddingLeft: 20,
     paddingTop: 20,
     paddingBottom: 10,
-    fontFamily: 'MontserratSemiBold',
+    fontFamily: 'Montserrat-SemiBold',
     fontSize: 12,
   },
   map: {
@@ -657,7 +641,7 @@ const styles = StyleSheet.create({
   },
   continueButtonText: {
     color: '#C4C4C4',
-    fontFamily: 'UrbanistBold',
+    fontFamily: 'Urbanist-Bold',
     fontSize: 17,
     
     
@@ -683,7 +667,7 @@ const styles = StyleSheet.create({
   },
   serviceText: {
     fontSize: 8, // Adjust your size accordingly
-    fontFamily: 'UrbanistRegular', // Adjust your font accordingly
+    fontFamily: 'Urbanist', // Adjust your font accordingly
     textAlign: 'center',
     color: '#C4C4C4',
   },
@@ -694,3 +678,4 @@ const styles = StyleSheet.create({
 });
 
 export default CreateListingScreen;
+

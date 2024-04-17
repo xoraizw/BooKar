@@ -19,8 +19,8 @@ export const styles = StyleSheet.create({
   },
   headerTitle: {
     color: '#c4c4c4',
-    fontSize: 24,
-    fontFamily: 'Urbanist-Bold',
+    fontSize: 26,
+    fontFamily: 'UrbanistBold',
   },
   container: {
     flex: 1,
@@ -29,29 +29,34 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 20,
     margin: 10,
-    backgroundColor: '#C4C4C4',
+    backgroundColor: '#33D45A01',
+    
     borderRadius: 10,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 3,
-    borderWidth: 10, // Add this line
-    borderColor: '#D45A01', //
+    borderWidth: 4,
+    borderColor: '#D45A01',
   },
+  
   notificationTextContainer: {
     marginLeft: 16,
     flex: 1,
+    fontFamily: 'UrbanistBold',
   },
   notificationTitle: {
-    color: '#212121',
-    fontSize: 18,
-    fontFamily: 'Urbanist-Bold',
+    color: '#C4C4C4',
+    fontSize: 22,
+    
   },
   notificationDescription: {
-    color: '#757575',
+    color: '#C4C4C4',
     fontSize: 15,
-    fontFamily: 'Montserrat-Regular',
+    paddingRight:33,
+    // fontFamily: 'Montserrat-Regular',
+    fontFamily: 'UrbanistBold',
   },
   crossButton: {
     justifyContent: 'center',

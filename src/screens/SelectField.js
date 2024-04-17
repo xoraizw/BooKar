@@ -3,22 +3,33 @@ import { View, Image, Text, StyleSheet, TouchableOpacity, Modal, TouchableWithou
 import { styles } from '../../assets/styles/selectfieldStyles';
 import {ipAddr} from './ipconfig.js';
 
-
-
-
 const NewPage = ({route, navigation}) => {
-  const {passedCompanyName, passedCompanyEmail, passedLocation, passedEmail, passedContactName, passedUserEmail, passedCurrentUser} = route.params
+  const {passedCompanyName, passedCompanyEmail, passedLocation, passedEmail, passedContactName, passedUserEmail, passedCurrentUser, passedCurrentCompany} = route.params
+  console.log('Route selectField:', route); // Log the entire route object
+
 
   const [modalVisibleField, setModalVisibleField] = useState(false);
-
-
   const [selectedField, setSelectedField] = useState(null);
   const [fields, setFields] = useState([]);
   
 
+  // const getFields = async () => {
+  //   try {
+  //     const response = await fetch(`http://${ipAddr}:3000/company-fields?companyEmail=${passedCompanyEmail}`);
+  //     const data = await response.json(); // Parse the JSON response
+  //     if (data) {
+  //       setFields(data); // Set the parsed data to bookedTimeSlots
+  //     } else {
+  //       setFields([]);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching booked time slots:', error.message);
+  //   }
+  // };
+
   const getFields = async () => {
     try {
-      const response = await fetch(`http://${ipAddr}:3000/company-fields?companyEmail=${passedCompanyEmail}`);
+      const response = await fetch(`http://${ipAddr}:3000/company-fields-fetch?companyEmail=${passedCompanyEmail}&companyName=${passedCompanyName}`);
       const data = await response.json(); // Parse the JSON response
       if (data) {
         setFields(data); // Set the parsed data to bookedTimeSlots
@@ -30,17 +41,14 @@ const NewPage = ({route, navigation}) => {
     }
   };
 
+  
   useEffect(() => {
     getFields();
   }, []);
 
   const handleBackPress = () => {
     navigation.navigate('FieldProfile', {
-          companyName : passedCompanyName,
-          companyEmail : passedCompanyEmail,
-          Location : passedLocation,
-          email : passedEmail, 
-          contact_name : passedContactName, 
+          currcompany: passedCurrentCompany,
           user_email : passedUserEmail, 
           currentUser : passedCurrentUser,                
       })
@@ -114,7 +122,8 @@ const NewPage = ({route, navigation}) => {
                 emailProp: passedEmail,
                 locationProp: passedLocation,
                 contactNameProp: passedContactName,
-                userEmailProp: passedUserEmail
+                userEmailProp: passedUserEmail,
+                passedCurrentCompany: passedCurrentCompany,
               });
             }}>
               <Text style={styles.continueButtonText}>Continue</Text>

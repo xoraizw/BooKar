@@ -98,7 +98,7 @@ export const styles = StyleSheet.create({
       justifyContent: 'space-between',
       paddingHorizontal: 20,
       marginTop: 0,
-      width: 585,
+      width: '100%',
       height: 350,
       position: 'relative',
     },
@@ -122,14 +122,17 @@ export const styles = StyleSheet.create({
       justifyContent: 'space-around',
       alignItems: 'center',
       width: '100%',
-      height: '10%', // Adjust the height as needed
+      height: '10%',
       backgroundColor: '#00170C',
       position: 'absolute',
       bottom: 0,
       left: 0,
       right: 0,
-      borderTopLeftRadius: 12, // Rounded top left corner
-      borderTopRightRadius: 12, // Rounded top right corner
+      borderTopLeftRadius: 12,
+      borderTopRightRadius: 12,
+      borderColor: 'black',
+      borderWidth: 3,
+      zIndex: 1000,
     },
     navbarTab: {
       justifyContent: 'center',

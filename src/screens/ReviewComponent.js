@@ -61,7 +61,7 @@ const ReviewComp = ({ company_name, company_email, current_user }) => {
 
     return (
         <>
-            <TouchableOpacity style={styles2.button} onPress={openModal}>
+            <TouchableOpacity style={styles2.button2} onPress={openModal}>
                 <Text style={styles2.buttonText}>Review</Text>
             </TouchableOpacity>
             <Modal

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback} from 'react';
-import { View, Text, TouchableOpacity, TextInput, TouchableWithoutFeedback, SafeAreaView, StyleSheet, Animated, Keyboard, Image, FlatList, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, TouchableWithoutFeedback, SafeAreaView, StyleSheet, Animated, Keyboard, Image, FlatList, Modal, ScrollView } from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -90,58 +90,66 @@ const MyBookings = ({ route, navigation }) => {
             style={selectedTab === 'home' ? styles.navbarTabSelected : styles.navbarTab}
             onPress={() => {handleTabPress('home');
             navigation.navigate('HomePage');
-              navigation.navigate('HomePage', {
+            navigation.navigate('HomePage', {
                 emailProp: email, });
             }}
           >
             <Ionicons
-              name={selectedTab === 'home' ? 'home' : 'home-outline'}
+              name={'home'}
               size={24}
-              color={selectedTab === 'home' ? '#D45A01' : '#7D7D7D'}
+              color={'#7D7D7D'}
             />
             <Text style={styles.navbarText}>Home</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={selectedTab === 'search' ? styles.navbarTabSelected : styles.navbarTab}
+            style={styles.navbarTab}
             onPress={() => {
               handleTabPress('search');
               navigation.navigate('Search');
               navigation.navigate('Search', {
-                emailProp: email,
+                emailPassed: email,
+                currentUser: currentUser
               }); // Navigate to the Search page
             }}
           >
             <Ionicons
-              name={selectedTab === 'search' ? 'search' : 'search-outline'}
+              name={'search'}
               size={24}
-              color={selectedTab === 'search' ? '#D45A01' : '#7D7D7D'}
+              color={'#7D7D7D'}
             />
             <Text style={styles.navbarText}>Search</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={selectedTab === 'list' ? styles.navbarTabSelected : styles.navbarTab}
+            style={styles.navbarTab}
             onPress={() => {
                 handleTabPress('list');
             }}
           >
             <Ionicons
-              name={selectedTab === 'list' ? 'list' : 'list-outline'}
+              name={'list'}
               size={24}
-              color={selectedTab === 'list' ? '#D45A01' : '#7D7D7D'}
+              color={'#D45A01'}
             />
             <Text style={styles.navbarText}>Bookings</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={selectedTab === 'person' ? styles.navbarTabSelected : styles.navbarTab}
-            onPress={() => handleTabPress('person')}
-          >
-            <Ionicons
-              name={selectedTab === 'person' ? 'person' : 'person-outline'}
-              size={24}
-              color={selectedTab === 'person' ? '#D45A01' : '#7D7D7D'}
-            />
-            <Text style={styles.navbarText}>Profile</Text>
-          </TouchableOpacity>
+          style={selectedTab === 'person' ? styles.navbarTabSelected : styles.navbarTab}
+          onPress={() => {
+            handleTabPress('person');
+            // navigation.navigate('UserProfile');
+            navigation.navigate('UserProfile', {
+              email: email,
+              name: currentUser.Name
+            }); // Navigate to the Search page
+          }}
+        >
+          <Ionicons
+            name={selectedTab === 'person' ? 'person' : 'person-outline'}
+            size={24}
+            color={'#7D7D7D'}
+          />
+          <Text style={styles.navbarText}>Profile</Text>
+        </TouchableOpacity>
         </View>
       );
   };
@@ -212,7 +220,7 @@ const MyBookings = ({ route, navigation }) => {
   const fetchMyBookings = async () => {
       try {
         console.log("route param: ", route.params.email)
-        const response = await fetch(`http://${ipAddr}:3000/my-bookings?userEmail=${route.params.email}`);
+        const response = await fetch(`http://${ipAddr}:3000/my-bookings?userEmail=${email}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
           }
@@ -321,6 +329,21 @@ const MyBookings = ({ route, navigation }) => {
     )
   }
   const AllBookings = ({ venueName, bookingTime, cancelled, useremail, companyemail, fieldname, price, companyname }) => {
+    if (! cancelled && checkEventStatus(bookingTime) === "Completed") return (
+      <View style={styles.card}>
+          <View style={styles.row}>
+              <Image source={img} style={styles.cardImage} />
+              <View style={styles.cardTextContent}>
+                  <Text style={styles.venueName}>{venueName}</Text>
+                  <Text style={styles.bookingTime}>{bookingTime}</Text>
+                  <View style={styles.paidContainer}>
+                      <Text style={styles.paidText}>Paid</Text>
+                  </View>         
+                  <ReviewComponent company_name= {companyname} company_email = {selectedCompanyEmail} current_user = {currentUser} />
+              </View>
+          </View>
+      </View>
+  );
     return (
         <View style={styles.card}>
             <View style={styles.row}>
@@ -328,12 +351,18 @@ const MyBookings = ({ route, navigation }) => {
                 <View style={styles.cardTextContent}>
                     <Text style={styles.venueName}>{venueName}</Text>
                     <Text style={styles.bookingTime}>{bookingTime}</Text>
-                    <View style={styles.paidContainer}>
+                    {!cancelled  && <View style={styles.paidContainer}>
                         <Text style={styles.paidText}>Paid</Text>
                     </View>
+                    }
+                    {cancelled  && <View style={styles.cancelContainer}>
+                        <Text style={styles.cancelText}>Canceled</Text>
+                    </View>
+                    }
                 </View>
             </View>
             {cancelled && (
+              
                 <View style={[styles.tagContainer, styles.refundedTag]}>
                     <Text style={styles.tagText}>Canceled & Refunded</Text>
                     <View style={styles.line} />
@@ -353,6 +382,7 @@ const MyBookings = ({ route, navigation }) => {
             }
             {!cancelled && checkEventStatus(bookingTime) === "Completed" &&
               (
+                
                 <ReviewComponent company_name= {companyname} company_email = {selectedCompanyEmail} current_user = {currentUser} />
               )
             }
@@ -368,7 +398,7 @@ const MyBookings = ({ route, navigation }) => {
                       <Text style={styles.venueName}>{venueName}</Text>
                       <Text style={styles.bookingTime}>{bookingTime}</Text>
                       <View style={styles.paidContainer}>
-                          <Text style={styles.paidText}>Paid</Text>
+                          <Text style={styles.cancelText}>Canceled</Text>
                       </View>
                   </View>
               </View>
@@ -453,13 +483,15 @@ const MyBookings = ({ route, navigation }) => {
               />
               <Text style={styles.headerTitle}>My Bookings</Text>
           </View>
-          <View style={styles.pillContainer}>
+          <ScrollView horizontal contentContainerStyle={styles.scrollViewContainer}>
+            <View style={styles.pillContainer}>
               <PillButton text="All" isSelected={selectedCategory === 'All'} onPress={() => setSelectedCategory('All')} />
               <PillButton text="Ongoing" isSelected={selectedCategory === 'Ongoing'} onPress={() => setSelectedCategory('Ongoing')} />
               <PillButton text="Completed" isSelected={selectedCategory === 'Completed'} onPress={() => setSelectedCategory('Completed')} />
               <PillButton text="Up-coming" isSelected={selectedCategory === 'UpComing'} onPress={() => setSelectedCategory('UpComing')} />
               <PillButton text="Canceled" isSelected={selectedCategory === 'Canceled'} onPress={() => setSelectedCategory('Canceled')} />
-          </View>
+            </View>
+          </ScrollView>
           <FlatList
               data= {bookings}
               renderItem={({ item }) => {

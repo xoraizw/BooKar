@@ -31,7 +31,8 @@ const TimePicker = ({ selectedValue, onValueChange, visible, onClose, availableT
 };
 
 const CalendarComponent = ({route, navigation}) => {
-  const { fieldChosen, companyEmail, companyName, bookingUser, emailProp, locationProp, contactNameProp, userEmailProp} = route.params;
+  const { fieldChosen, companyEmail, companyName, bookingUser, emailProp, locationProp, contactNameProp, userEmailProp, passedCurrentCompany} = route.params;
+  console.log('Route bookslot:', route); // Log the entire route object
 
 
   const generateHourlySlots = (checkInTime, checkOutTime) => {
@@ -415,6 +416,7 @@ const ContinueButton = () => {
           passedContactName: contactNameProp,
           passedUserEmail: userEmailProp,
           passedCurrentUser: bookingUser,
+          passedCurrentCompany: passedCurrentCompany,
         });
       }}>
           <Image source={require('../../assets/images/white_back_arrow.png')} style={styles.arrowIcon} />

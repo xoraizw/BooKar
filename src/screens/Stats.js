@@ -10,7 +10,7 @@ import BestField from './BestField';
 
 const Stats = ({ navigation, route }) => {
 
-  const { emailProp } = route.params;
+  const { emailProp, currentUser } = route.params;
   const [selectedTab, setSelectedTab] = useState('home');
   const [reviews, setReviews] = useState(null);
   const [avgRating, setAvgRating] = useState(0);
@@ -19,8 +19,6 @@ const Stats = ({ navigation, route }) => {
   const [star3Count, setStar3Count] = useState(0);
   const [star4Count, setStar4Count] = useState(0);
   const [star5Count, setStar5Count] = useState(0);
-
-  
 
   useEffect(() => {
     getReviews();
@@ -101,9 +99,7 @@ const Stats = ({ navigation, route }) => {
   }
 
   const handleTabPress = (tabName) => {
-    if (tabName === selectedTab) {
-      setSelectedTab(null);
-    } else {
+
       setSelectedTab(tabName);
   
       switch (tabName) {
@@ -111,12 +107,15 @@ const Stats = ({ navigation, route }) => {
             navigation.navigate('OwnerHomepage', { email: emailProp });
             setSelectedTab('home');
           break;
-        case 'list':
-          // Navigate to bookings or other related screen for 'list' tab
-          break;
+          case 'list':
+            navigation.navigate('OwnerBookings', {
+              emailProp: emailProp,
+              currentUser: currentUser
+            })
+            break;
         case 'cart':
           // Navigate to 'OwnerInventory' screen when cart tab is pressed
-          navigation.navigate('OwnerInventory', { email: email });
+          navigation.navigate('OwnerInventory', { emailProp: emailProp, currentUser: currentUser });
           break;
         case 'person':
           // Navigate to earnings or other related screen for 'person' tab
@@ -125,7 +124,6 @@ const Stats = ({ navigation, route }) => {
           // Handle default case or no tab selected
           break;
       }
-    }
   };
 
   const chartHeight = 240;
@@ -200,56 +198,52 @@ const Stats = ({ navigation, route }) => {
       </ScrollView>
       <View style={styles.navbar}>
         <TouchableOpacity
-          style={selectedTab === 'home' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress={() => handleTabPress('home')}
         >
           <Ionicons
-            name={selectedTab === 'home' ? 'home' : 'home-outline'}
+            name={'home'}
             size={24}
-            color={selectedTab === 'home' ? '#D45A01' : '#7D7D7D'}
+            color={'#7D7D7D'}
           />
-          <Text style={styles.navbarText}>Listings</Text>
+          <Text style={styles.navbarText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={selectedTab === 'list' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress={() => handleTabPress('list')}
         >
           <Ionicons
-            name={selectedTab === 'calender' ? 'calendar' : 'calendar-outline'}
+            name={'calendar'}
             size={24}
-            color={selectedTab === 'list' ? '#D45A01' : '#7D7D7D'}
+            color={'#7D7D7D'}
           />
-          <Text style={styles.navbarText}>Calendar</Text>
+          <Text style={styles.navbarText}>Bookings</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={selectedTab === 'cart' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress={() => handleTabPress('cart')}
         >
           <Ionicons
-            name={selectedTab === 'cart' ? 'cart' : 'cart-outline'}
+            name={'cart'}
             size={24}
-            color={selectedTab === 'cart' ? '#D45A01' : '#7D7D7D'}
+            color={'#7D7D7D'}
           />
           <Text style={styles.navbarText}>Inventory</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={selectedTab === 'person' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress={() => handleTabPress('person')}
         >
           <Ionicons
-            name={selectedTab === 'person' ? 'logo-usd' : 'logo-usd'}
+            name={'logo-usd'}
             size={24}
-            color={selectedTab === 'person' ? '#D45A01' : '#7D7D7D'}
+            color={'#D45A01'}
           />
           <Text style={styles.navbarText}>Earnings</Text>
         </TouchableOpacity>
       </View>
     </View>
-    
-
-    
-    
-    
+  
   );
 };
 

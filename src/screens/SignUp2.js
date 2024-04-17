@@ -3,43 +3,76 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Image, Animated} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { styles } from '../../assets/styles/signup2Styles';
+import DropDownPicker from "react-native-dropdown-picker";
 import { ipAddr } from './ipconfig';
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Platform } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
-
+import {useRef } from 'react';
 const Screen3 = ({ navigation, route }) => {
   const { userType, username, email, phoneNumber, password } = route.params;
   const [fullName, setFullName] = useState('');
   // const [dateOfBirth, setDateOfBirth] = useState('');
-  const [gender, setGender] = useState('');
-  const [city, setCity] = useState('');
-  const [age, setAge] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
   const [slideDownAnim] = useState(new Animated.Value(-50));
   const [fadeAnim] = useState(new Animated.Value(0));
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [ setShowDatePicker] = useState(false);
   const [dateOfBirth, setDateOfBirth] = useState(new Date());
   const [dateSelected, setDateSelected] = useState(false);
   const [isGenderPickerVisible, setIsGenderPickerVisible] = useState(false);
   const [isCityPickerVisible, setIsCityPickerVisible] = useState(false);
-
-  // Function to calculate age from date of birth
-  const calculateAge = (dob) => {
-    const today = new Date();
-    const birthDate = new Date(dob);
-    let age = today.getFullYear() - birthDate.getFullYear();
-    const monthDifference = today.getMonth() - birthDate.getMonth();
-    if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDate.getDate())) {
-      age--;
-    }
-    return age.toString(); // Return age as a string to set it directly in the age input
+  const [genderItems, setGenderItems] = useState([
+    { label: 'Male', value: 'male' },
+    { label: 'Female', value: 'female' },
+  ]);
+  const [openGenderPicker, setOpenGenderPicker] = useState(false);
+const [openCityPicker, setOpenCityPicker] = useState(false);
+const [cityItems, setCityItems] = useState([
+  { label: 'Lahore', value: 'Lahore' },
+  { label: 'Karachi', value: 'Karachi' },
+  { label: 'Islamabad', value: 'Islamabad' },
+  { label: 'Faisalabad', value: 'Faisalabad' },
+  { label: 'Multan', value: 'Multan' },
+  { label: 'Sialkot', value: 'Sialkot' },
+  { label: 'Gujranwala', value: 'Gujranwala' },
+]);
+const scrollViewRef = useRef();
+const genderInputRef = useRef();
+const [gender, setGender] = useState(null);
+  const [city, setCity] = useState('');
+  const [age, setAge] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+  const showDatePicker = () => {
+    setDatePickerVisibility(true);
   };
 
+  const hideDatePicker = () => {
+    setDatePickerVisibility(false);
+  };
+
+  const handleConfirm = (date) => {
+    let localOffset = date.getTimezoneOffset() * 60000;
+    let localDate = new Date(date - localOffset);
+    setDateOfBirth(localDate.toISOString().split('T')[0]); // Format date to YYYY-MM-DD
+    setAge(calculateAge(date));
+    hideDatePicker();
+  };
+  
+  // Updated calculateAge function to use the correct date format
+  const calculateAge = (date) => {
+    const today = new Date();
+    const birthDate = new Date(date); // Ensure date is a Date object
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const m = today.getMonth() - birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age.toString(); // Return age as a string
+  };
+  
   const onDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || dateOfBirth;
-    setShowDatePicker(false); // Hide the date picker
-    setDateOfBirth(currentDate);
     setDateSelected(true); // Update state to indicate the user has selected a date
     setAge(calculateAge(currentDate)); // Automatically calculate and set age
   };
@@ -134,14 +167,13 @@ const Screen3 = ({ navigation, route }) => {
       });
     }
   };
-  
   return (
+    
     <View style={styles.container}>
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Screen2')}>
         <Ionicons name="arrow-back" size={24} color="white" />
       </TouchableOpacity>
       <Image source={require('../../assets/images/profilepic.png')} style={styles.image} />
-      <Text style={styles.subheading}>Add Profile Picture</Text>
       <Animated.View
           style={[
             errorBubbleStyle,
@@ -153,106 +185,93 @@ const Screen3 = ({ navigation, route }) => {
         >
           {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
       </Animated.View>
-      <View style={styles.inputContainer}>
+      <View style={styles.errorContainer}>
+        
+        <View style={styles.inputContainer}>
+      <View style={styles.inputIcon}>
+        <TextInput style={styles.input} placeholder="Full Name" placeholderTextColor="rgba(255, 255, 255, 0.75)" onChangeText={setFullName} />
+        <Image source={require('../../assets/images/fullname-icon.png')} style={styles.icon} />
+      </View>
+      <TouchableOpacity onPress={showDatePicker} style={styles.inputIcon}>
+        <TextInput
+          style={styles.input}
+          placeholder="Date of Birth"
+          placeholderTextColor="rgba(255, 255, 255, 0.75)"
+          value={dateOfBirth} // Display the selected date as text
+          editable={false} // Optional: Prevent manual editing
+        />
+        <Image source={require('../../assets/images/calender-icon.png')} style={styles.icon} />
+      </TouchableOpacity>
+      <DateTimePickerModal
+        isVisible={isDatePickerVisible}
+        mode="date"
+        onConfirm={handleConfirm}
+        onCancel={hideDatePicker}
+        textColor="black" // Set text color to black
+      />
+    </View>
+  <View style={[styles.inputIcon, {zIndex: openGenderPicker ? 3000 : 1000}]}>
+  <DropDownPicker
+    open={openGenderPicker}
+    value={gender}
+    items={genderItems}
+    setOpen={setOpenGenderPicker}
+    setValue={setGender}
+    setItems={setGenderItems}
+    placeholder="Gender"
+    style={styles.dropdownPicker}
+    dropDownContainerStyle={styles.dropdownPickerContainer}
+    textStyle={styles.dropdownPickerText}
+  />
+  <Image
+    source={require('../../assets/images/gender-icon.png')}
+    style={{
+      ...styles.icon,
+      position: 'absolute',
+      right: 20,
+      marginLeft: 10,
+      zIndex: openGenderPicker ? 5001 : 7001 // Ensure icon is above the dropdown
+    }}
+    resizeMode="contain"
+  />
+</View>
+<View style={[styles.inputIcon, {zIndex: openCityPicker ? 2000 : 1000}]}>
+  <DropDownPicker
+    open={openCityPicker}
+    value={city}
+    items={cityItems}
+    setOpen={setOpenCityPicker}
+    setValue={setCity}
+    setItems={setCityItems}
+    placeholder="City"
+    style={styles.dropdownPicker}
+    dropDownContainerStyle={styles.dropdownPickerContainer}
+    textStyle={styles.dropdownPickerText}
+    placeholderStyle={styles.dropdownPickerPlaceholder}
+  />
+  <Image
+    source={require('../../assets/images/city-icon.png')}
+    style={{
+      ...styles.icon,
+      position: 'absolute',
+      right: 20,
+      marginLeft: 10,
+      zIndex: openCityPicker ? 2001 : 7001 // Ensure icon is above the dropdown
+    }}
+    resizeMode="contain"
+  />
+</View>
+        <View style={styles.inputContainer}>
         <View style={styles.inputIcon}>
-          <TextInput style={styles.input} placeholder="Full Name" placeholderTextColor="rgba(255, 255, 255, 0.75)" onChangeText={setFullName} />
-          <Image source={require('../../assets/images/fullname-icon.png')} style={styles.icon} />
-        </View>
-
-        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.inputIcon}>
-        <View style={styles.ageContainer}>  
-          <Text style={styles.ageText}>{dateSelected ? dateOfBirth.toDateString() : 'Set Birth Date'}</Text>
-          <Image source={require('../../assets/images/calender-icon.png')} style={styles.icon} />
-        </View>
-        </TouchableOpacity>
-        {showDatePicker && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={dateOfBirth}
-            mode="date"
-            is24Hour={true}
-            display="default"
-            onChange={onDateChange}
-          />
-        )}
-      
-        <View style={styles.inputIcon}>
-          <TouchableOpacity 
-            style={styles.pickerContainer} 
-            onPress={() => setIsGenderPickerVisible(true)}
-          >
-            <Image source={require('../../assets/images/gender-icon.png')} style={styles.icon} />
-            <View style={styles.pickerInnerContainer}>
-              <Text style={styles.pickerText}>
-                {gender || ""}
-              </Text>
-              <Ionicons name="chevron-down" size={24} color="gray" style={styles.downArrowIcon} />
-            </View>
-          </TouchableOpacity>
-          {isGenderPickerVisible && (
-            <View style={styles.pickerWrapper}>
-              <RNPickerSelect
-                onValueChange={(value) => {
-                  setGender(value);
-                  setIsGenderPickerVisible(false); // Hide picker after selection
-                }}
-                items={[
-                  { label: 'Male', value: 'Male' },
-                  { label: 'Female', value: 'Female' },
-                ]}
-                style={pickerSelectStyles}
-                placeholder={{ label: "Gender", value: 'Male' }}
-                value={gender}
-                useNativeAndroidPickerStyle={false}
-              />
-            </View>
-          )}
-        </View>
-
-        <View style={styles.inputIcon}>
-          <TouchableOpacity 
-            style={styles.pickerContainer} 
-            onPress={() => setIsCityPickerVisible(true)}
-          >
-            <Image source={require('../../assets/images/city-icon.png')} style={styles.icon} />
-            <View style={styles.pickerInnerContainer}>
-              <Text style={styles.pickerText}>
-                {city || "City"}
-              </Text>
-              <Ionicons name="chevron-down" size={24} color="gray" style={styles.downArrowIcon} />
-            </View>
-          </TouchableOpacity>
-          {isCityPickerVisible && (
-            <View style={styles.pickerWrapper}>
-              <RNPickerSelect
-                onValueChange={(value) => {
-                  setCity(value);
-                  setIsCityPickerVisible(false); // Hide picker after selection
-                }}
-                items={[
-                  { label: 'Lahore', value: 'Lahore' },
-                  { label: 'Karachi', value: 'Karachi' },
-                  { label: 'Islamabad', value: 'Islamabad' },
-                ]}
-                style={pickerSelectStyles}
-                placeholder={{ label: "City", value: 'Lahore' }}
-                value={city}
-                useNativeAndroidPickerStyle={false}
-              />
-            </View>
-          )}
-        </View>
-
-        <View style={styles.inputIcon}>
-          <View style={styles.ageContainer}>
+        <View style={styles.input}>
             <Text style={styles.ageText}>
               {age ? `${age} years` : 'Age'}
             </Text>
             <Image source={require('../../assets/images/username-icon.png')} style={styles.icon} />
           </View>
-        </View>
-        </View>
-
+        </View> 
+      </View>
+      </View>
       <TouchableOpacity
         style={[styles.button, styles.buttonBackground, styles.nextButton]}
         onPress={validateAndNavigate}
@@ -262,43 +281,5 @@ const Screen3 = ({ navigation, route }) => {
     </View>
   );
 };
-
-const pickerSelectStyles = StyleSheet.create({
-  // ... other styles
-
-  // Style for the view that RNPickerSelect uses to wrap the picker
-  viewContainer: {
-    alignSelf: 'stretch', // Stretch to fill the width of the parent
-
-  },
-  
-  // This style is applied to the input field (the placeholder in this case)
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: '#853902',
-    backgroundColor: '#853902',
-    borderRadius: 13,
-    color: '#C4C4C4',
-    paddingRight: 30, // to ensure the text is never behind the icon
-    width: '100%', // Match the width of the input field
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: '#853902',
-    backgroundColor: '#853902',
-    borderRadius: 13,
-    color: '#C4C4C4',
-    paddingRight: 30, // to ensure the text is never behind the icon
-    width: '100%', // Match the width of the input field
-  },
-});
-
-
 
 export default Screen3;

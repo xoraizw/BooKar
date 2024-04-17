@@ -121,12 +121,12 @@ const Login = () => {
         <Text style={styles.loginBtnText}>Login</Text>
       </TouchableOpacity>
   
-      <View style={styles.googleContainer}>
+      {/* <View style={styles.googleContainer}>
         <Text style={styles.continueWithText}>or continue with</Text>
         <TouchableOpacity style={styles.googleBtn}>
           <Image source={googleIcon} style={styles.googleIcon} />
         </TouchableOpacity>
-      </View>
+      </View> */}
       
       <View style={styles.signUpContainer}>
         <Text style={styles.signUpText}>Don’t have an account? </Text>

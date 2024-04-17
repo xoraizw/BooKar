@@ -142,9 +142,9 @@ export const styles = StyleSheet.create({
       marginLeft: 33,
     },
     continueButtonText: {
-      fontSize: 17,
+      fontSize: 12,
       fontFamily: 'UrbanistSemiBold',
-      color: '#FFF',
+      color: '#000000',
     },
     backArrowContainer: {
       justifyContent: 'center',
@@ -161,15 +161,16 @@ export const styles = StyleSheet.create({
     guestsContainer: {
       alignItems: 'flex-start',
       paddingLeft: 20,
-      marginTop: 20,
-      position: 'absolute',
-      bottom: 240, 
-      left: 0,
-      right: 310,
+      marginTop: 0,
+      // position: 'absolute',
+      // bottom: 230, 
+      // left: 0,
+      // // right: 310,
+      marginBottom: 100,
       alignItems: 'center',
     },
     guestsText: {
-      fontSize: 17,
+      fontSize: 20,
       fontFamily: 'UrbanistBold',
       color: '#C4C4C4',
     },
@@ -194,7 +195,7 @@ export const styles = StyleSheet.create({
       alignItems: 'center',
     },
     buttonText: {
-      fontSize: 24,
+      fontSize: 12,
       color: '#FFF',
     },
     counterText: {

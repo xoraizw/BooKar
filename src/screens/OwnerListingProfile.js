@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, Image, Text, StyleSheet, ScrollView, TouchableOpacity, Animated, Modal, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useFonts } from 'expo-font';
 import { Ionicons } from '@expo/vector-icons';
-import { styles2 } from '../../assets/styles/fieldprofileStyles';
+import { styles2 } from '../../assets/styles/ownerFieldProfileStyles.js';
 import {ipAddr} from './ipconfig';
 
 const CompanyProfile = ({ companyName, imageUrl, location, images, moreDetails, descriptionText, facilityIcons, facilityTexts, mapImage, reviewRating, reviewName, reviewDate, reviewContent, reviewPicture,companyEmail}) => {
@@ -66,10 +66,11 @@ const CompanyProfile = ({ companyName, imageUrl, location, images, moreDetails, 
 
   return (
     <ScrollView contentContainerStyle={styles2.scrollView}>
-      <View style={[styles2.container, { backgroundColor: '#00170C' }]}>
+      <View style={[styles2.container, { backgroundColor: '#000000' }]}>
         <Image
           source={imageUrl}
           style={styles2.image}
+          resizeMode="contain"
         />
         <View style={styles2.textContainer}>
           <Text style={styles2.companyName}>{companyName}</Text>
@@ -102,6 +103,10 @@ const CompanyProfile = ({ companyName, imageUrl, location, images, moreDetails, 
             </View>
           </Modal>
 
+          <View style={styles2.detailsContainer}>
+            <Text style={styles2.detailsText}>Details</Text>
+          </View>
+          {/* More details container */}
           <View style={styles2.moreDetailsContainer}>
             {moreDetails.map((detail, index) => (
               <View key={index} style={styles2.detailItem}>
@@ -131,6 +136,10 @@ const CompanyProfile = ({ companyName, imageUrl, location, images, moreDetails, 
                 <Text style={styles2.facilityText}>{facilityTexts[index]}</Text>
               </View>
             ))}
+          </View>
+          <View style={styles2.locationPopupContainer}>
+            <Text style={styles2.locationPopupText}>Location</Text>
+            <Image source={mapImage} style={styles2.mapImage} resizeMode="contain" />
           </View>
           <View style={styles2.reviewsContainer}>
             <Text style={styles2.reviewsText}>Reviews</Text>
@@ -173,9 +182,9 @@ const CompanyProfile = ({ companyName, imageUrl, location, images, moreDetails, 
   );
 };
 
-const CompanyProfilesScreen = ({route, navigation}) => {
-  console.log('Route fieldprofile:', route); // Log the entire route object
-  const { currcompany, user_email, currentUser } = route.params;
+const OwnerProfilesScreen = ({route, navigation}) => {
+  // console.log('Route:', route); // Log the entire route object
+  const { currcompany, user_email} = route.params;
   const images = [
     require('../../assets/images/swimmer.png'),
     require('../../assets/images/Lord.png'),
@@ -201,7 +210,7 @@ const CompanyProfilesScreen = ({route, navigation}) => {
     require ('../../assets/images/meeting_room.png'),
     require('../../assets/images/restaurant.png'),
     require('../../assets/images/parking.png'),
-    require('../../assets/images/airconditioning.png'),
+    require('../../assets/images/AC.png'),
     require('../../assets/images/basketball.png'),
   ];
 
@@ -219,21 +228,21 @@ const CompanyProfilesScreen = ({route, navigation}) => {
   ];
 
   const servicesMap = {
-    'Tennis': require('../../assets/images/tennis1.png'),
-    'Swimming': require('../../assets/images/swimming1.png'),
+    'Tennis': require('../../assets/images/Tennis Racquet.png'),
+    'Swimming': require('../../assets/images/Swimming (1).png'),
     'Cricket' : require('../../assets/images/cricket.png'),
     'Basketball' : require('../../assets/images/basketball.png'),
     'Gaming' : require('../../assets/images/gaming.png'),
     'Football' : require('../../assets/images/football.png'),
-    'Badminton' : require('../../assets/images/badminton1.png'),
-    'Volleyball' : require('../../assets/images/volleyball1.png'),
-    'Snooker':require('../../assets/images/8ball.png'),
-    'Golf':require('../../assets/images/golf1.png'),
-    'Squash':require('../../assets/images/squash.png'),
-    'Horse Riding': require('../../assets/images/horse1.png'),
-    'Bowling':require('../../assets/images/bowling.png'), 
-    'Gun Range': require('../../assets/images/target1.png'),
-    'Gym':require('../../assets/images/gym1.png'),
+    'Badminton' : require('../../assets/images/Shuttlecock.png'),
+    'Volleyball' : require('../../assets/images/Volleyball.png'),
+    'Snooker':require('../../assets/images/Circled 8.png'),
+    'Golf':require('../../assets/images/Golf.png'),
+    'Squash':require('../../assets/images/Racquetball.png'),
+    'Horse Riding': require('../../assets/images/Trotting Horse.png'),
+    'Bowling':require('../../assets/images/Bowling Pins.png'), 
+    'Gun Range': require('../../assets/images/Target.png'),
+    'Gym':require('../../assets/images/Gym.png'),
   }
 
   const servicesArray = Object.keys(servicesMap).map(key => ({
@@ -287,42 +296,6 @@ const CompanyProfilesScreen = ({route, navigation}) => {
 
   const [showTopScreen, setShowTopScreen] = useState(false);
   const fadeAnim = useState(new Animated.Value(0))[0];
-  const [modalVisible, setModalVisible] = useState(false);
-  const [textInputValue, setTextInputValue] = useState('');
-  const [selectedStar, setSelectedStar] = useState(0);
-  const [errorVisible, setErrorVisible] = useState(false);
-
-  const postReview = async () => 
-  {
-    try {
-      const response = await fetch(`http://${ipAddr}:3000/addreview`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          Rating: selectedStar, // Example rating value
-          UserName: currentUser.Name, // Example user name
-          CompanyEmailGiven: currcompany.Email, // Example company email
-          // CompanyEmailGiven: currcompany.Email, // isko ye nahi hona chahiye?
-          Comments: textInputValue, // Example comments
-        }),
-      });
-  
-      if (response.ok) 
-      {
-        console.log('Review added successfully');
-        // Handle success, navigate to a different screen, etc.
-      } 
-      else {
-        throw new Error('Failed to add review');
-      }
-    } 
-    catch (error) {
-      console.error('Error while posting review:', error.message);
-      // Handle error, display an error message, etc.
-    }
-  };
 
   
   useEffect(() => {
@@ -357,32 +330,25 @@ const CompanyProfilesScreen = ({route, navigation}) => {
   };
 
   const handleBackButtonPress = () => {
-    navigation.navigate('HomePage', {
+    navigation.navigate('OwnerHomePage', {
       emailProp: user_email,
     });
     // You can add functionality here if needed in the future
   };
 
-  const openModal = () => {
-    setModalVisible(true);
-  };
+  // const base64Image = Buffer.from(currcompany.Image.data).toString('base64');
+  let base64Image = null; // Initialize the variable to null by default
 
-  const closeModal = () => {
-    setModalVisible(false);
-  };
+  try {
+    // Attempt to convert image data to base64 string if it exists
+    if (currcompany.Image && currcompany.Image.data) {
+      base64Image = Buffer.from(currcompany.Image.data).toString('base64');
+    }
+  } catch (error) {
+    console.error('Failed to convert image data to base64:', error);
+    base64Image = null; // Ensure base64Image is null if there's an error
+  }
 
-  const handleTextInputChange = (text) => {
-    setTextInputValue(text);
-  };
-
-  const handleBackgroundPress = () => {
-    Keyboard.dismiss();
-  };
-
-  const handleStarPress = (index) => {
-    setSelectedStar(index + 1);
-  };
-  const base64Image = Buffer.from(currcompany.Image.data).toString('base64');
 
   return (
     <>
@@ -404,7 +370,7 @@ const CompanyProfilesScreen = ({route, navigation}) => {
         
         <CompanyProfile
           companyName={currcompany.Company_Name}
-          imageUrl={base64Image ? { uri: `data:image/png;base64,${base64Image}` } : require('../../assets/images/image_2.png')}
+          imageUrl={base64Image ? { uri: `data:image/png;base64,${base64Image}` } : require('../../assets/images/fifthgen.png')}
           location={currcompany.Location}
           images={images}
           moreDetails={filteredServicesArray}
@@ -421,96 +387,8 @@ const CompanyProfilesScreen = ({route, navigation}) => {
           companyEmail={currcompany.Email}
         />
     </ScrollView>
-    <View style={styles2.fixedContainer}>
-      {/* <TouchableOpacity style={styles2.button} onPress={openModal}>
-        <Text style={styles2.buttonText}>Review</Text>
-      </TouchableOpacity> */}
-      <TouchableOpacity style={styles2.bookButton}
-      onPress={() => {
-        navigation.navigate('SelectField', {
-          // companyName, companyEmail, Location, email, contact_name, user_email, currentUser
-          passedCompanyName: currcompany.Company_Name,
-          passedCompanyEmail: currcompany.Email,
-          passedLocation: currcompany.Location,
-          passedEmail: user_email,
-          passedContactName: currcompany.Contact_Name,
-          passedUserEmail: user_email,
-          passedCurrentUser: currentUser,
-          passedCurrentCompany: currcompany,
-        });
-      }}>
-        <Text style={styles2.bookButtonText}>Book Kar!</Text>
-      </TouchableOpacity>
-    </View>
-    <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={closeModal}
-    >
-      <TouchableWithoutFeedback onPress={handleBackgroundPress}>
-        <View style={styles2.centeredView}>
-          <View style={styles2.modalView}>
-            <TouchableOpacity onPress={closeModal} style={styles2.closeButton}>
-              <Image source={require('../../assets/images/close.png')} style={styles2.backArrow} />
-            </TouchableOpacity>
-            <Text style={styles2.modalText}>How was your experience at {currcompany.Company_Name}?</Text>
-            <View style={styles2.textInputContainer}>
-              <TextInput
-                style={styles2.textInput}
-                placeholder="Add Comment (Optional)"
-                onChangeText={handleTextInputChange}
-                value={textInputValue}
-                multiline={true}
-                numberOfLines={4}
-                maxLength={1100}
-              />
-            </View>
-            <View style={styles2.starContainer}>
-              {[1, 2, 3, 4, 5].map((index) => (
-                <TouchableOpacity
-                  key={index}
-                  onPress={() => handleStarPress(index)}
-                >
-                  <Ionicons
-                    name={selectedStar >= index + 1 ? 'star' : 'star-outline'}
-                    size={36}
-                    color={selectedStar >= index + 1 ? '#D45A01' : '#7D7D7D'}
-                    style={styles2.starIcon}
-                  />
-                </TouchableOpacity>
-              ))}
-            </View>
-            {errorVisible && (
-                <View style={styles2.errorContainer}>
-                  <Text style={styles2.errorText}>Please choose a rating before submitting the review.</Text>
-                </View>
-            )}    
-            <View style={styles2.submitButtonContainer}>
-              <TouchableOpacity
-                style={styles2.submitButton}
-                onPress={() => {
-                  if (selectedStar > 0) {
-                    postReview(); // Call the postReview function when the button is pressed
-                    closeModal(); // Close the modal after posting the review
-                  } else {
-                    // Show an error message that stars are mandatory
-                    // You can implement this using an Alert or a custom modal
-                      setErrorVisible(true);
-                    // alert('Please choose a rating before submitting the review.');
-                  }
-                }}
-              >
-                <Text style={styles2.submitButtonText}>Submit</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </TouchableWithoutFeedback>
-    </Modal>
   </>
 );
-
 };
 
-export default CompanyProfilesScreen;
+export default OwnerProfilesScreen;

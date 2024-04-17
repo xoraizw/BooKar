@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, SafeAreaView,TouchableWithoutFeedback} from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'; // Assuming we're using Expo
-import { Image, Modal } from 'react-native';
-import { useNavigation } from '@react-navigation/native'; // Assuming you're using react-navigation
+import { Image} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {ToastContainer, toast} from 'react-toastify'
-// import Modal from 'react-native-modal';
+import Modal from 'react-native-modal';
 import { set } from 'mongoose';
 import { styles } from '../../assets/styles/paymentStyles'
 
-const PaymentScreen = ({route}) => {
+const PaymentScreen = ({navigation, route}) => {
   const {field, company_email, company_name, user, email_prop, location, contact_name, user_email, booking} = route.params
   console.log("Booking: ", booking)
   const [selectedPayment, setSelectedPayment] = useState(null);
-  const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
   const [isSelected, setIsSelected] = useState(false);
@@ -92,7 +90,10 @@ const PaymentSuccessModal = ({ visible, onClose }) => {
     style={styles.image}
   />
             <Text style={styles.modalTextTitle}>Payment Successful!</Text>
-            <TouchableOpacity style={styles.modalButton} onPress={() => {/* Handle view bookings */}}>
+            <TouchableOpacity style={styles.modalButton} onPress={() => {
+              navigation.navigate('HomePage', {
+              emailProp: user_email             
+            })}}>
                 <Text style={styles.modalButtonText}>View Bookings</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.cancelButton} onPress={onClose}>

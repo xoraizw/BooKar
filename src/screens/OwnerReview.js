@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Example, adjust the
 
 const Reviews = ({ navigation, route }) => {
 
-  const { emailProp } = route.params;
+  const { emailProp, currentUser } = route.params;
   const [reviews, setReviews] = useState(null);
   const [avgRating, setAvgRating] = useState(0);
 
@@ -80,12 +80,33 @@ const Reviews = ({ navigation, route }) => {
 
 
   const handleTabPress = (tabName) => {
-    if (tabName === selectedTab) {
-      setSelectedTab(null);
-    } else {
-      setSelectedTab(tabName);
+
+    setSelectedTab(tabName);
+
+    switch (tabName) {
+      case 'home':
+          navigation.navigate('OwnerHomepage', { email: emailProp });
+          setSelectedTab('home');
+        break;
+        case 'list':
+          navigation.navigate('OwnerBookings', {
+            emailProp: emailProp,
+            currentUser: currentUser
+          })
+          break;
+      case 'cart':
+        // Navigate to 'OwnerInventory' screen when cart tab is pressed
+        navigation.navigate('OwnerInventory', { emailProp: emailProp, currentUser: currentUser });
+        break;
+      case 'person':
+        navigation.navigate('StatScreen', { emailProp: emailProp, currentUser: currentUser });
+        // Navigate to earnings or other related screen for 'person' tab
+        break;
+      default:
+        // Handle default case or no tab selected
+        break;
     }
-  };
+};
 
   return (
     <View style={styles.container}>

@@ -53,7 +53,7 @@ const NotificationScreen = ({ navigation, route }) => {
       <ScrollView style={styles.container}>
         {notifications.map((notification, index) => (
           <View key={index} style={styles.notificationCard}>
-            <Icon name="bell-outline" size={24} color="#D45A01" />
+            <Icon name="bell-outline" size={28} color="#D45A01" />
             <View style={styles.notificationTextContainer}>
               <Text style={styles.notificationDescription}>{notification.Msg}</Text>
             </View>

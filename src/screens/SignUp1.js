@@ -13,6 +13,7 @@ const Screen2 = ({ navigation, route }) => {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
   const [reEnterPassword, setReEnterPassword] = useState('');
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   // Error Message Animation 
   
@@ -147,10 +148,11 @@ const Screen2 = ({ navigation, route }) => {
     <View style={styles.container}>
 
       <View style={styles.container}>
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('Signup')}>
+      <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('UserType')}>
         <Ionicons name="arrow-back" size={24} color="white" />
       </TouchableOpacity>
-        <Text style={styles.settingYou}>Setting you{'\n'}up</Text>
+        <Text style={styles.settingYou}>Setting you</Text>
+        <Text style={styles.up}>up</Text>
       </View>
       <Animated.View
           style={[
@@ -183,14 +185,13 @@ const Screen2 = ({ navigation, route }) => {
           <Image source={require('../../assets/images/email-icon.png')} style={styles.icon} />
         </View>
         <View style={styles.inputIcon}>
-        <TextInput
-          style={styles.input}
-          placeholder="Phone Number"
-          placeholderTextColor="rgba(255, 255, 255, 0.75)"
-          onChangeText={setPhoneNumber}
-          keyboardType="numeric" // Show numeric keypad
-          value={phoneNumber}
-        />
+          <TextInput
+            style={styles.input}
+            placeholder="Phone Number"
+            placeholderTextColor="rgba(255, 255, 255, 0.75)"
+            keyboardType='numeric'
+            onChangeText={setPhoneNumber}
+          />
           <Image source={require('../../assets/images/phone-icon.png')} style={styles.icon} />
         </View>
         <View style={styles.inputIcon}>
@@ -215,7 +216,9 @@ const Screen2 = ({ navigation, route }) => {
         </View>
       </View>
       <View style={styles.termsContainer}>
-  <TouchableOpacity style={styles.checkbox} />
+  <TouchableOpacity style={styles.checkbox} onPress={() => setTermsAccepted(!termsAccepted)}>
+    {termsAccepted && <Text style={styles.tickMark}>✔</Text>}
+  </TouchableOpacity>
 
   <Text style={styles.acceptText}>Accept</Text>
   <Text style={styles.termsText}>Terms & Conditions</Text>
@@ -233,5 +236,4 @@ const Screen2 = ({ navigation, route }) => {
   Screen2.navigationOptions = {
     headerShown: false,
   };
-
 export default Screen2;

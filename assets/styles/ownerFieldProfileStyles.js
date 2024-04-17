@@ -28,7 +28,6 @@ export const styles2 = StyleSheet.create({
     image: {
       width: 500,
       height: 335,
-      
     },
     textContainer: {
       alignSelf: 'flex-start',
@@ -150,7 +149,7 @@ export const styles2 = StyleSheet.create({
     descriptionTextBox: {
       width: 349,
       height: 98,
-      backgroundColor: '#00170C',
+      backgroundColor: '#000000',
       marginTop: 10,
       borderRadius: 8,
       // paddingHorizontal: 10,
@@ -167,7 +166,6 @@ export const styles2 = StyleSheet.create({
     readMoreButton: {
       marginTop: 0,
       alignSelf: 'flex-end',
-      marginRight:10,
       // borderColor: 'red',
       // borderWidth: 1,
     },
@@ -313,7 +311,7 @@ export const styles2 = StyleSheet.create({
       left: 0,
       right: 0,
       height: 100,
-      backgroundColor: '#00170C',
+      backgroundColor: '#000000',
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
@@ -345,7 +343,7 @@ export const styles2 = StyleSheet.create({
       left: 0,
       right: 0,
       height: 100,
-      backgroundColor: '#00170C',
+      backgroundColor: '#000000',
       flexDirection: 'row',
       alignItems: 'center',
       paddingHorizontal: 20,
@@ -392,15 +390,6 @@ export const styles2 = StyleSheet.create({
       alignItems: 'center',
       borderRadius: 25,
     },
-    button2: {
-      marginTop: 20,
-      width: 152,
-      height: 48,
-      backgroundColor: '#7D7D7D',
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: 25,
-    },
     buttonText: {
       fontFamily: 'UrbanistBold',
       fontSize: 16,
@@ -414,7 +403,7 @@ export const styles2 = StyleSheet.create({
     },
     modalView: {
       margin: 20,
-      backgroundColor: '#00170C',
+      backgroundColor: '#000000',
       borderRadius: 5,
       padding: 35,
       alignItems: 'center',

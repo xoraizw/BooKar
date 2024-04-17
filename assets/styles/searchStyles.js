@@ -16,6 +16,7 @@ export const styles = StyleSheet.create({
       width: 355,
       height: 40,
       marginTop: 60,
+      marginBottom:-70,
       marginLeft: 10,
     },
     searchInput: {
@@ -26,7 +27,7 @@ export const styles = StyleSheet.create({
       marginLeft: 10,
     },
     pillContainer: {
-      marginTop: 10,
+      marginTop: 1,
       paddingHorizontal: 5,
       height: 40,
       marginBottom: 12,
@@ -54,7 +55,7 @@ export const styles = StyleSheet.create({
     },
     arenaContainer: {
       position: 'absolute',
-      top: 155,
+      top: 100,
       left: 10,
       width: '100%',
       height: '73%',
@@ -67,15 +68,15 @@ export const styles = StyleSheet.create({
       justifyContent: 'center',
       padding: 1,
       width: 164,
-      height: 240,
+      height: 280,
     },
     arenaImage: {
       width: 141,
       height: 130,
       aspectRatio: 1,
       borderRadius: 12,
-      marginTop: 10,
-      marginBottom: 5,
+      marginTop: 0,
+      marginBottom: 15,
       zIndex: 1,
     },
     detailsContainer: {
@@ -103,8 +104,12 @@ export const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'space-between',
       marginTop: 5,
-      paddingHorizontal: 10,
+      paddingHorizontal: 0,
       width: '100%',
+      marginLeft: 35,
+      paddingRight: 30,
+      // borderColor: 'yellow',
+      // borderWidth: 1
     },
     leftSection: {
       flexDirection: 'row',
@@ -120,10 +125,11 @@ export const styles = StyleSheet.create({
     rating: {
       fontFamily: 'UrbanistRegular',
       fontSize: 14,
-      marginLeft: -2,
+      marginLeft: 6,
+      marginTop : 2
     },
     price: {
-      fontFamily: 'UrbanistRegular',
+      fontFamily: 'UrbanistLight',
       fontSize: 14,
       color: '#C4C4C4',
     },
@@ -132,14 +138,17 @@ export const styles = StyleSheet.create({
       justifyContent: 'space-around',
       alignItems: 'center',
       width: '106%',
-      height: '8%', // Adjust the height as needed
+      height: '9%',
       backgroundColor: '#00170C',
       position: 'absolute',
       bottom: 0,
       left: 0,
       right: 0,
-      borderTopLeftRadius: 12, // Rounded top left corner
-      borderTopRightRadius: 12, // Rounded top right corner
+      borderTopLeftRadius: 12, 
+      borderTopRightRadius: 12, 
+      borderColor: 'black',
+      borderWidth: 3,
+      zIndex: 1000,
     },
     navbarTab: {
       justifyContent: 'center',

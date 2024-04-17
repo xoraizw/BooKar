@@ -1,6 +1,36 @@
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
+  dropdownPicker: {
+    marginLeft: 10,
+    fontSize: 16,
+    height: 59,
+    borderColor: '#853902',
+    borderWidth: 1,
+    marginBottom: 1,
+    paddingLeft: 50, // Adjust paddingLeft to create space for the icon
+    color: '#C4C4C4',
+    backgroundColor: '#853902',
+    borderRadius: 13,
+    fontFamily: 'Urbanist',
+    width: '95%'
+    // Add any other styling to match your input fields
+  },
+  dropdownPickerContainer: {
+    backgroundColor: '#853902', borderColor: '#C4C4C4' 
+    // Add any styling to position your dropdown
+  },
+  dropdownPickerText: {
+    color: '#C4C4C4',
+    fontSize: 16,
+    fontFamily: 'Urbanist-Medium',
+
+    // Add any other text styling
+  },
+  dropdownPickerPlaceholder: {
+    color: 'rgba(255, 255, 255, 0.75)',
+    // Add any other placeholder text styling
+  },
     backButton: {
       position: 'absolute',
       top: 27,
@@ -15,8 +45,8 @@ export const styles = StyleSheet.create({
     },
     subheading: {
       fontSize: 16,
-      marginBottom: 10,
-      fontFamily: 'Urbanist', // Montserrat font
+      marginBottom: 25,
+      fontFamily: 'Urbanist-Medium', // Montserrat font
       color: '#C4C4C4', // Orange color from Screen1
       opacity: 0.75,
     },
@@ -26,14 +56,21 @@ export const styles = StyleSheet.create({
     },
     errorText: {
       color: '#C4C4C4',
-      marginBottom: 10,
     },
     inputContainer: {
       justifyContent: 'center',
       alignItems: 'center',
     },
+    iconButton: {
+      position: 'absolute',
+      right: 10,
+      height: '100%', // Adjust if needed
+      justifyContent: 'center', // This will vertically center the icon
+      zIndex: 3001, // Make sure this zIndex is higher than dropdown zIndex
+    },
     inputIcon: {
       flexDirection: 'row',
+      alignItems: 'center',
       // alignItems: 'center',
       marginBottom: 14,
     },
@@ -49,6 +86,7 @@ export const styles = StyleSheet.create({
       width: 113, // Adjust this value
       height: 113, // Adjust this value
       marginTop: 10,
+      marginBottom: 50, 
     },
     input: {
       fontSize: 16,
@@ -60,18 +98,22 @@ export const styles = StyleSheet.create({
       color: '#C4C4C4',
       backgroundColor: '#853902',
       borderRadius: 13,
-      fontFamily: 'Urbanist',
+      fontFamily: 'Urbanist-Medium',
       width: '95%' // Adjust paddingLeft to create space for the icon
+    },
+    ageText: {
+      color: '#C4C4C4',
+      fontSize: 16,
+      fontFamily: 'Urbanist-Medium',
+      marginTop: 20,
     },
     button: {
       backgroundColor: '#853902',
       borderRadius: 56.5,
       padding: 13,
-      bottom: -65,
+      bottom: -105,
       borderRadius: 25,
-      borderWidth: 2,
-      borderColor: '#FF6347', // Orange color from Screen1
-      width: '99%', // Adjusted width to fit the screen
+      width: '90%', // Adjusted width to fit the screen
     },
     buttonBackground: {
       backgroundColor: '#D45A01', // Orange color from Screen1
@@ -79,7 +121,7 @@ export const styles = StyleSheet.create({
     buttonText: {
       color: '#C4C4C4',
       textAlign: 'center',
-      fontFamily: 'Urbanist',
+      fontFamily: 'Urbanist-Medium',
       fontSize: 17, // Urbanist font
     },
   

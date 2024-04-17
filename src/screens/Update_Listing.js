@@ -1,10 +1,14 @@
-import React from 'react';
+// import React from 'react';
 import { ScrollView,Button,Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; // Make sure to install this package
-import MapView from 'react-native-maps'; // Make sure to install this package
-import  { useState } from 'react';
+// import MapView from 'react-native-maps'; // Make sure to install this package
+// import  { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
+import { useRoute } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import { ipAddr } from './ipconfig';
+
 const serviceIcons = {
     Hockey: require('../../assets/images/Hockey.png'),
     TennisBall: require('../../assets/images/Tennis Ball.png'),
@@ -15,13 +19,79 @@ const serviceIcons = {
   };
   
   const CreateListingScreen = () => {
+
+    const navigation = useNavigation();
+    const route = useRoute(); // Use useRoute to access route params
+  
+    const { email, name} = route.params;
+    console.log(name)
+    const ogname = name;
+
+    const [listingData, setListingData] = useState({});
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+
+    useEffect(() => {
+      const fetchListingData = async () => {
+        try {
+          // Make the API call to fetch listing data
+          const response = await fetch(`http://${ipAddr}:3000/listing-fetcher?name=${name}&email=${email}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch listing data');
+          }
+          const data = await response.json();
+          // Check if data is not empty and is an array with at least one element
+          if (Array.isArray(data) && data.length > 0) {
+            const listing = data[0]; // Get the first element (assuming there's only one)
+            const openHours = listing.openHours.split(' - ');
+            const startTime = openHours[0];
+            const endTime = openHours[1];
+            setListingData(listing);
+            setStartTime(startTime);
+            setEndTime(endTime);
+            setIsDataLoaded(true);
+          } else {
+            console.error('No listing data found');
+          }
+        } catch (error) {
+          console.error('Error fetching listing data:', error);
+        }
+      };
+    
+      fetchListingData(); // Call the async function
+    }, []);
+
+    const renderTimeSlots = () => {
+      // Filter time slots based on selected start time
+      if (startTime) {
+        const startIndex = timeSlots.indexOf(startTime) + 1;
+        return timeSlots.slice(startIndex);
+      }
+      return timeSlots;
+    };
+
+    const saveData = () => {
+      // Check if both start and end times are selected
+      if (listingData.startTime && listingData.endTime) {
+        const formattedTime = `${listingData.startTime} - ${listingData.endTime}`;
+        // Update the listingData state with the formatted time string
+        setListingData({...listingData, openHours: formattedTime});
+      }
+    };
+    
+    
+    const [selectedServices, setSelectedServices] = useState({});
+    // const navigation = useNavigation();
     const [startModalVisible, setStartModalVisible] = useState(false);
     const [endModalVisible, setEndModalVisible] = useState(false);
-    const [selectedServices, setSelectedServices] = useState({});
-    const navigation = useNavigation();
-    const [startTime, setStartTime] = useState('00:00');
-    const [endTime, setEndTime] = useState('00:00');
-    const [modalVisible, setModalVisible] = useState(false);
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null);
+    const timeSlots = [
+      '00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', 
+      '08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', 
+      '16:00', '17:00', '18:00', '19:00', '20:00', '21:00', '22:00', '23:00', '00:00'
+    ]; // Define your time slots
+  
   
     const toggleService = (service) => {
       setSelectedServices(prev => ({
@@ -30,7 +100,7 @@ const serviceIcons = {
       }));
     };
   
-    const timeSlots = Array.from({length: 24}, (v, i) => (`${i.toString().padStart(2, '0')}:00`));
+    // const timeSlots = Array.from({length: 24}, (v, i) => (`${i.toString().padStart(2, '0')}:00`));
     const getServiceStyle = (service) => {
         return selectedServices[service] ? styles.selectedService : {};
       };
@@ -89,9 +159,27 @@ const serviceIcons = {
             <Text style={styles.headerTitle}>Edit Listing</Text>
           </View>
     
-          <TextInput style={styles.input} placeholder="Name" placeholderTextColor="#C4C4C4" />
-          <TextInput style={styles.input} placeholder="Address" placeholderTextColor="#C4C4C4" />
-          <TextInput style={styles.input} placeholder="Description" placeholderTextColor="#C4C4C4" />
+          <TextInput 
+            style={styles.input} 
+            placeholder="Name" 
+            placeholderTextColor="#C4C4C4" 
+            value={listingData.Company_Name} 
+            onChangeText={(text) => setListingData({...listingData, Company_Name: text})} // Update name when text changes
+          />
+          <TextInput 
+            style={styles.input} 
+            placeholder="Address" 
+            placeholderTextColor="#C4C4C4" 
+            value={listingData.Location} 
+            onChangeText={(text) => setListingData({...listingData, Location: text})} // Update address when text changes
+          />
+          <TextInput 
+            style={styles.input} 
+            placeholder="Description" 
+            placeholderTextColor="#C4C4C4" 
+            value={listingData.Description} 
+            onChangeText={(text) => setListingData({...listingData, Description: text})} // Update description when text changes
+          />
     
           <Text style={styles.sectionTitle}>Select Services</Text>
       <View style={styles.servicesGrid}>
@@ -392,7 +480,7 @@ const serviceIcons = {
         </View>
           
           <Text style={styles.sectionTitle}>Select Location</Text>
-          <MapView
+          {/* <MapView
             style={styles.map}
             initialRegion={{
               latitude: 37.78825,
@@ -400,47 +488,63 @@ const serviceIcons = {
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
-          />
-<TouchableOpacity 
+          /> */}
+<TouchableOpacity
   onPress={() => setStartModalVisible(true)}
   style={styles.timeButton}
 >
   <Text style={styles.buttonText}>
-    {startTime ? `Start Time: ${startTime}` : 'Select Start Time'}
+    {listingData.openHours ? `Start Time: ${listingData.openHours.split(' - ')[0]}` : 'Select Start Time'}
   </Text>
 </TouchableOpacity>
 
-<TouchableOpacity 
+<TouchableOpacity
   onPress={() => setEndModalVisible(true)}
   style={styles.timeButton}
 >
   <Text style={styles.buttonText}>
-    {endTime ? `End Time: ${endTime}` : 'Select End Time'}
+    {listingData.openHours ? `End Time: ${listingData.openHours.split(' - ')[1]}` : 'Select End Time'}
   </Text>
 </TouchableOpacity>
 
 <TimePickerModal
   isVisible={startModalVisible}
   onClose={() => setStartModalVisible(false)}
-  onValueChange={(itemValue) => setStartTime(itemValue)}
-  selectedValue={startTime}
+  onValueChange={(itemValue) => {
+    const formattedTime = `${itemValue} - ${listingData.openHours ? listingData.openHours.split(' - ')[1] : ''}`;
+    setListingData({...listingData, openHours: formattedTime});
+  }}
+  selectedValue={listingData.openHours ? listingData.openHours.split(' - ')[0] : null}
   timeSlots={timeSlots}
 />
 
 <TimePickerModal
   isVisible={endModalVisible}
   onClose={() => setEndModalVisible(false)}
-  onValueChange={(itemValue) => setEndTime(itemValue)}
-  selectedValue={endTime}
-  timeSlots={timeSlots}
+  onValueChange={(itemValue) => {
+    const formattedTime = `${listingData.openHours ? listingData.openHours.split(' - ')[0] : ''} - ${itemValue}`;
+    setListingData({...listingData, openHours: formattedTime});
+  }}
+  selectedValue={listingData.openHours ? listingData.openHours.split(' - ')[1] : null}
+  timeSlots={renderTimeSlots()}
 />
+
 
 
           <Image source={require('../../assets/images/bar.png')} style={styles.barImage} />
 
-          <TouchableOpacity style={styles.continueButton} onPress={() => navigation.navigate('PricingAndCapacitiesScreen')}>
+          {isDataLoaded && listingData &&
+            <TouchableOpacity 
+              style={styles.continueButton} 
+              onPress={() => {
+                // saveData(listingData); // Call saveData function before navigation
+                navigation.navigate('UpdatePricing', { listingData: listingData, ogname: ogname});
+              }}
+            >
             <Text style={styles.continueButtonText}>Continue</Text>
-          </TouchableOpacity>
+
+            </TouchableOpacity>
+          }
         </ScrollView>
       );
     };

@@ -8,14 +8,17 @@ export const styles = StyleSheet.create({
       justifyContent: 'space-around',
       alignItems: 'center',
       width: '100%',
-      height: '10%', // Adjust the height as needed
+      height: '10%',
       backgroundColor: '#00170C',
       position: 'absolute',
       bottom: 0,
       left: 0,
       right: 0,
-      borderTopLeftRadius: 12, // Rounded top left corner
-      borderTopRightRadius: 12, // Rounded top right corner
+      borderTopLeftRadius: 12, 
+      borderTopRightRadius: 12,
+      borderColor: 'black',
+      borderWidth: 3,
+      zIndex: 1000,
     },
     navbarTab: {
       justifyContent: 'center',
@@ -58,37 +61,35 @@ export const styles = StyleSheet.create({
       paddingVertical: 8,
       marginBottom: 16,
     },
+    scrollViewContainer: {
+      paddingHorizontal: 8, // Add some padding to the sides of the content
+    },
     pill: {
       // General pill styles
       minWidth: 110,
+      height: 40,
       paddingVertical: 8,
       paddingHorizontal: 20,
       marginHorizontal: 5,
       borderRadius: 20,
     },
     selectedPill: {
-      // Selected pill styles
       backgroundColor: '#D45A01',
     },
     unselectedPill: {
-      // Unselected pill styles
       backgroundColor: 'transparent',
       borderWidth: 1,
       borderColor: '#D45A01',
     },
     pillText: {
-      // General text styles
       textAlign: 'center',
     },
     selectedPillText: {
-      // Selected text styles
       color: '#C4C4C4',
     },
     unselectedPillText: {
-      // Unselected text styles
       color: '#D45A01',
     },
-    // ...other styles
     card: {
       backgroundColor: 'rgba(133, 57, 2, 0.5)',
       borderRadius: 12,
@@ -130,10 +131,23 @@ export const styles = StyleSheet.create({
       marginTop: 4,
       alignSelf: 'flex-start',
     },
+    cancelContainer: {
+      backgroundColor: '#35383F',
+      borderRadius: 6,
+      paddingVertical: 4,
+      paddingHorizontal: 8,
+      marginTop: 4,
+      alignSelf: 'flex-start',
+    },
     paidText: {
       fontFamily: 'UrbanistRegular',
       fontSize: 12,
       color: '#C4C4C4',
+    },
+    cancelText : {
+      fontFamily: 'UrbanistRegular',
+      fontSize: 12,
+      color: '#FF7878',
     },
     line: {
       borderBottomColor: '#D45A01',
@@ -171,13 +185,17 @@ export const styles = StyleSheet.create({
       paddingVertical: 4,
       paddingHorizontal: 8,
       marginTop: 4,
-      alignSelf: 'flex-start',
+      alignSelf: 'center',
+      width: '100%'
   
     },
     tagText: {
       fontFamily: 'UrbanistRegular',
       fontSize: 12,
       color: '#FF7878',
+      textAlign: 'center',
+      marginTop : 3,
+      marginBottom: 7
     },
     bottomTagContainer: {
       backgroundColor: '#35383F',

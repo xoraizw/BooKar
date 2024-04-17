@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback} from 'react';
-import { View, Text, TouchableOpacity, TextInput, TouchableWithoutFeedback, SafeAreaView, StyleSheet, Animated, Keyboard, Image, FlatList, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, TextInput, TouchableWithoutFeedback, SafeAreaView, StyleSheet, Animated, Keyboard, Image, FlatList, Modal ,ScrollView} from 'react-native';
 
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,19 +18,26 @@ const MyBookings = ({ route, navigation }) => {
     const [bookings, setBookings] = useState([]);
     const [selectedTab, setSelectedTab] = useState('list');
 
-  const handleTabPress = (tabName) => {
-    setSelectedTab(tabName);
-    if (tabName === 'home') {
-      navigation.navigate('OwnerHomepage', {
-        email: emailProp
-      });
-      // Add other navigation logic for other tabs if necessary
-    } else if (tabName === 'search') {
-      navigation.navigate('Search');
-    // } else if (tabName === 'person') {
-    //   navigation.navigate('Profile');
-    }
-  };
+    const handleTabPress = (tabName) => {
+        setSelectedTab(tabName);
+    
+        switch (tabName) {
+          case 'home':
+              navigation.navigate('OwnerHomepage', { email: emailProp });
+            break;
+          case 'list':
+            break;
+          case 'cart':
+            // Navigate to 'OwnerInventory' screen when cart tab is pressed
+            navigation.navigate('OwnerInventory', { emailProp: emailProp, currentUser: currentUser });
+            break;
+          case 'person':
+            navigation.navigate('StatScreen', { emailProp: emailProp, currentUser: currentUser });
+            break;
+          default:
+            break;
+        }
+    };
     const [loaded] = useFonts({
         UrbanistRegular: require('../../assets/fonts/Urbanist/static/Urbanist-Regular.ttf'),
         UrbanistBold: require('../../assets/fonts/Urbanist/static/Urbanist-Bold.ttf'),
@@ -57,55 +64,50 @@ const MyBookings = ({ route, navigation }) => {
     return (
         <View style={styles.navbar}>
         <TouchableOpacity
-            style={selectedTab === 'home' ? styles.navbarTabSelected : styles.navbarTab}
-            onPress={() => handleTabPress('home')}
-          >
-            <Ionicons
-              name={selectedTab === 'home' ? 'home' : 'home-outline'}
-              size={24}
-              color={selectedTab === 'home' ? '#D45A01' : '#7D7D7D'}
-            />
-            <Text style={styles.navbarText}>Listings</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-              style={selectedTab === 'list' ? styles.navbarTabSelected : styles.navbarTab}
-              onPress={ () =>
-                navigation.navigate('OwnerBookings', {
-                  emailProp: email,
-                  currentUser: user
-                })
-              }
-          >
-              <Ionicons
-                  name={selectedTab === 'calender' ? 'calendar' : 'calendar-outline'} 
-                  size={24}
-                  color={selectedTab === 'list' ? '#D45A01' : '#7D7D7D'}
-              />
-              <Text style={styles.navbarText}>Bookings</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-              style={selectedTab === 'cart' ? styles.navbarTabSelected : styles.navbarTab}
-              onPress={() => handleTabPress('cart')}
-          >
-              <Ionicons
-              name={selectedTab === 'cart' ? 'cart' : 'cart-outline'}
-              size={24}
-              color={selectedTab === 'cart' ? '#D45A01' : '#7D7D7D'}
-              />
-              <Text style={styles.navbarText}>Inventory</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-              style={selectedTab === 'person' ? styles.navbarTabSelected : styles.navbarTab}
-              onPress={() => handleTabPress('person')}
-              >
-              <Ionicons
-                  name={selectedTab === 'person' ? 'logo-usd' : 'logo-usd'} 
-                  size={24}
-                  color={selectedTab === 'person' ? '#D45A01' : '#7D7D7D'}
-              />
-              <Text style={styles.navbarText}>Earnings</Text>
-          </TouchableOpacity>
-        </View>
+          style={styles.navbarTab}
+          onPress={() => handleTabPress('home')}
+        >
+          <Ionicons
+            name={'home'}
+            size={24}
+            color={'#7D7D7D'}
+          />
+          <Text style={styles.navbarText}>Home</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navbarTab}
+          onPress={() => handleTabPress('list')}
+        >
+          <Ionicons
+            name={'calendar'}
+            size={24}
+            color={'#D45A01'}
+          />
+          <Text style={styles.navbarText}>Bookings</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navbarTab}
+          onPress={() => handleTabPress('cart')}
+        >
+          <Ionicons
+            name={'cart'}
+            size={24}
+            color={'#7D7D7D'}
+          />
+          <Text style={styles.navbarText}>Inventory</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.navbarTab}
+          onPress={() => handleTabPress('person')}
+        >
+          <Ionicons
+            name={'logo-usd'}
+            size={24}
+            color={'#7D7D7D'}
+          />
+          <Text style={styles.navbarText}>Earnings</Text>
+        </TouchableOpacity>
+      </View>
       );
   };
   ////////////////////////ASYNC FUNCTIONS/////////////////////////////////////////
@@ -210,9 +212,14 @@ const MyBookings = ({ route, navigation }) => {
                 <View style={styles.cardTextContent}>
                     <Text style={styles.venueName}>{venueName}</Text>
                     <Text style={styles.bookingTime}>{bookingTime}</Text>
-                    <View style={styles.paidContainer}>
+                    {!cancelled  && <View style={styles.paidContainer}>
                         <Text style={styles.paidText}>Paid</Text>
                     </View>
+                    }
+                    {cancelled  && <View style={styles.cancelContainer}>
+                        <Text style={styles.canceledText}>Canceled</Text>
+                    </View>
+                    }
                 </View>
             </View>
             {cancelled && (
@@ -227,7 +234,7 @@ const MyBookings = ({ route, navigation }) => {
             )}
             {!cancelled && checkEventStatus(bookingTime) === "Not Started" &&
               (
-                <View style={styles.tagContainer}>
+                <View >
                     <Text style={styles.tagText}>Upcoming</Text>
                 </View>
               )
@@ -244,7 +251,7 @@ const MyBookings = ({ route, navigation }) => {
                       <Text style={styles.venueName}>{venueName}</Text>
                       <Text style={styles.bookingTime}>{bookingTime}</Text>
                       <View style={styles.paidContainer}>
-                          <Text style={styles.paidText}>Paid</Text>
+                          <Text style={styles.paidText}>lora </Text>
                       </View>
                   </View>
               </View>
@@ -271,6 +278,9 @@ const MyBookings = ({ route, navigation }) => {
                     <Text style={styles.bookingTime}>{bookingTime}</Text>
                     <View style={styles.paidContainer}>
                         <Text style={styles.paidText}>Paid</Text>
+                    </View>
+                    <View style={styles.tagContainer1}>
+                      <Text style={styles.tagText}>Upcoming</Text>
                     </View>
                 </View>
             </View>
@@ -303,6 +313,7 @@ const MyBookings = ({ route, navigation }) => {
               />
               <Text style={styles.headerTitle}>My Bookings</Text>
           </View>
+          <ScrollView horizontal contentContainerStyle={styles.scrollViewContainer}>
           <View style={styles.pillContainer}>
               <PillButton text="Up-coming" isSelected={selectedCategory === 'UpComing'} onPress={() => setSelectedCategory('UpComing')} />
               <PillButton text="All" isSelected={selectedCategory === 'All'} onPress={() => setSelectedCategory('All')} />
@@ -310,6 +321,7 @@ const MyBookings = ({ route, navigation }) => {
               <PillButton text="Completed" isSelected={selectedCategory === 'Completed'} onPress={() => setSelectedCategory('Completed')} />
               <PillButton text="Canceled" isSelected={selectedCategory === 'Canceled'} onPress={() => setSelectedCategory('Canceled')} />
           </View>
+          </ScrollView>
           <FlatList
               data= {bookings}
               renderItem={({ item }) => {

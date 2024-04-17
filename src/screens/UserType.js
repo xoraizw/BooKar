@@ -54,11 +54,11 @@ const SignupScreen = () => {
       </View>
       {userType === 'Owner' || userType === 'Player' ? (
         <TouchableOpacity
-          onPress={handleNext}
-          style={[styles.nextButton, { backgroundColor: '#D45A01', borderRadius: 26.5 }]}
-        >
-          <Text style={{ color: '#FFF' }}>Next</Text>
-        </TouchableOpacity>
+  onPress={handleNext}
+  style={[styles.nextButton]}
+>
+  <Text style={styles.nextText}>Next</Text>
+</TouchableOpacity>
       ) : null}
     </View>
   );

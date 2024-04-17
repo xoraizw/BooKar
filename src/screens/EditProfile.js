@@ -4,8 +4,6 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, SafeAreaView, Scro
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {ipAddr} from './ipconfig.js';
 
-
-
 export default function EditProfileScreen({ route }) {
     const { emailRecvd, namercv } = route.params;
     const navigation = useNavigation();

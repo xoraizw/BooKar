@@ -1,100 +1,154 @@
-import React, { useState } from 'react';
-import { View, Image, Text, StyleSheet, TouchableOpacity, ScrollView, Animated } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Image, Text, StyleSheet, TouchableOpacity, FlatList, Animated } from 'react-native';
 import { useFonts } from 'expo-font';
-import { useNavigation } from '@react-navigation/native';
-
-// Mock database entries
-const mockListings = [
-  // {
-  //   field_name: 'Indoor Court',
-  //   field_display: require('../../assets/images/5_gen.png'),
-  // },
-  // {
-  //   field_name: 'Outdoor Court Small',
-  //   field_display: require('../../assets/images/5_gen.png'),
-  // },
-  // {
-  //   field_name: 'Outdoor Court Large',
-  //   field_display: require('../../assets/images/5_gen.png'),
-  // },
-];
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { ipAddr } from './ipconfig';
 
 const ManageListingsScreen = () => {
-  const handleBackPress = () => {
-    // Implement functionality for back press here
-  };
-
-  const navigation = useNavigation();
-
-  const [loaded] = useFonts({
-    LatoBold: require('../../assets/fonts/Lato/static/Lato-Bold.ttf'), // Import Lato Bold font
-    LatoRegular: require('../../assets/fonts/Lato/static/Lato-Regular.ttf'),
-    UrbanistRegular: require('../../assets/fonts/Urbanist/static/Urbanist-Regular.ttf'),
-    UrbanistBold: require('../../assets/fonts/Urbanist/static/Urbanist-SemiBold.ttf'),
-    UrbanistMedium: require('../../assets/fonts/Urbanist/static/Urbanist-Medium.ttf'),
-    UrbanistSemiBold: require('../../assets/fonts/Urbanist/static/Urbanist-SemiBold.ttf'),
-    UrbanistLight: require('../../assets/fonts/Urbanist/static/Urbanist-Light.ttf'), // Added UrbanistLight font
-    MontserratBold: require('../../assets/fonts/Montserrat/static/Montserrat-Bold.ttf'),
-    MontserratExtraLight: require('../../assets/fonts/Montserrat/static/Montserrat-ExtraLight.ttf'),
-    MontserratSemiBold: require('../../assets/fonts/Montserrat/static/Montserrat-SemiBold.ttf'),
-    MontserratRegular: require('../../assets/fonts/Montserrat/static/Montserrat-Regular.ttf')
-  });
-
-  // State variable to manage pop-up visibility
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [selectedListing, setSelectedListing] = useState(null);
+  const slideUpAnimation = new Animated.Value(400); // Animation value for sliding-up effect
+  const navigation = useNavigation();
+  const route = useRoute(); // Use useRoute to access route params
+  const { email} = route.params;
+  const [mockListings, setMockListings] = useState([]);
 
-  // Animation value for sliding-up effect
-  const slideUpAnimation = new Animated.Value(400); // Start from 400 (below screen)
+  useEffect(() => {
+    fetch(`http://${ipAddr}:3000/get-companies-owner?email=${email}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        setMockListings(data);
+      })
+      .catch(error => {
+        console.error('Error fetching listings:', error);
+      });
+  }, [email]);
 
-  if (!loaded) {
-    return null; // Render nothing while font is loading
-  }
-
-  if (mockListings.length === 0) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={handleBackPress}>
-            <Image
-              source={require('../../assets/images/white_back_arrow.png')}
-              style={styles.backArrow}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-          <Text style={styles.headerText}>Manage Listings</Text>
-        </View>
-        <View style={styles.warningContainer}>
-          <View style={styles.warningPill}>
-            <Image source={require('../../assets/images/warning.png')} style={styles.warningImage} />
-            <Text style={styles.warningText}>You have currently no listings!</Text>
-          </View>
-        </View>
-      </View>
-    );
-  }
-
-  // Function to handle delete button click
-  const handleDeleteListing = () => {
+  const handleDeleteListing2 = (listing) => {
+    setSelectedListing(listing);
     setShowDeleteConfirmation(true);
-    Animated.timing(slideUpAnimation, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
+  };
+  
+  useEffect(() => {
+    if (showDeleteConfirmation) {
+      Animated.timing(slideUpAnimation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      Animated.timing(slideUpAnimation, {
+        toValue: 400,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [showDeleteConfirmation]);
+
+  const handleDeleteListing = async (name) => {
+    if (!selectedListing) {
+      console.error('No listing selected for deletion');
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://${ipAddr}:3000/listing-deleter`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email }),
+      });
+  
+      if (response.ok) {
+        // Remove the deleted listing from the state
+        setMockListings(prevListings => prevListings.filter(item => item.Company_Name !== name));
+        setSelectedListing(null);
+      } else {
+        console.error('Failed to delete listing');
+      }
+    } catch (error) {
+      console.error('Error deleting listing:', error);
+    }
+  };
+  
+  // const handleDeleteListing = async (name) => {
+  //   if (!selectedListing) {
+  //     console.error('No listing selected for deletion');
+  //     return;
+  //   }
+  
+  //   try {
+  //     const response = await fetch(`http://${ipAddr}:3000/listing-deleter`, {
+  //       method: 'DELETE',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //       },
+  //       body: JSON.stringify({ name, email }),
+  //     });
+  
+  //     if (response.ok) {
+  //       setMockListings(prevListings => prevListings.filter(item => item.name !== name));
+  //       setSelectedListing(null);
+  //       fetch(`http://${ipAddr}:3000/get-listings?email=${email}`)
+  //         .then(response => {
+  //           if (!response.ok) {
+  //             throw new Error('Network response was not ok');
+  //           }
+  //           return response.json();
+  //         })
+  //         .then(data => {
+  //           setMockListings(data);
+  //         })
+  //         .catch(error => {
+  //           console.error('Error fetching listings:', error);
+  //         });
+  //     } else {
+  //       console.error('Failed to delete listing');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error deleting listing:', error);
+  //   }
+  // };
+
+  const handleBackPress = () => {
+    navigation.goBack({ email: email });
   };
 
-  // Function to handle close button click
   const handleClose = () => {
     Animated.timing(slideUpAnimation, {
       toValue: 400,
       duration: 300,
       useNativeDriver: true,
-    }).start(() => setShowDeleteConfirmation(false));
+    }).start();
   };
 
-  const handleEditListing = () => {
-    navigation.navigate('create'); // Navigate to CreateListings screen
-  };
+  const renderItem = ({ item, index }) => (
+      <View key={index} style={styles.listingContainer}>
+      <Image
+        source={{ uri: `data:image/jpeg;base64,${Buffer.from(item.Image.data).toString('base64')}` }}
+        style={styles.image}
+        resizeMode="cover"
+      />
+      <View style={styles.bottomHalf}>
+        <Text style={styles.fieldName}>{item.Company_Name}</Text>
+        <Text style={styles.fieldLocation}>{item.Location}</Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={[styles.button, styles.editButton]} onPress={() => navigation.navigate('UpdateListing', { email: email, name: item.Company_Name })}>
+            <Text style={styles.buttonText}>Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={() => handleDeleteListing2(item)}>
+            <Text style={styles.buttonText}>Delete</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -108,53 +162,40 @@ const ManageListingsScreen = () => {
         </TouchableOpacity>
         <Text style={styles.headerText}>Manage Listings</Text>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-        {mockListings.map((listing, index) => (
-          <View key={index} style={styles.listingContainer}>
-            <Image
-              source={listing.field_display}
-              style={styles.image}
-              resizeMode="cover"
-            />
-            <View style={styles.bottomHalf}>
-              <Text style={styles.fieldName}>{listing.field_name}</Text>
-              <Text style={styles.fieldLocation}>{listing.field_location}</Text>
-              <View style={styles.buttonContainer}>
-              <TouchableOpacity style={[styles.button, styles.editButton]} onPress={handleEditListing}>
-                  <Text style={styles.buttonText}>Edit</Text>
+      <FlatList
+        data={mockListings}
+        renderItem={renderItem}
+        keyExtractor={(item, index) => index.toString()}
+        contentContainerStyle={styles.scrollContainer}
+      />
+      {showDeleteConfirmation && (
+        <TouchableOpacity
+          style={styles.overlay}
+          onPress={handleClose}
+        >
+          <Animated.View style={[styles.deleteConfirmation, { transform: [{ translateY: slideUpAnimation }] }]}>
+            <View style={styles.popup}>
+              <Text style={styles.popupTitle}>Delete Listing</Text>
+              <View style={styles.line}></View>
+              <Text style={styles.confirmationText}>
+                Are you sure you want to{' '}
+                <Text style={styles.permanentlyText}>permanently</Text>{' '}
+                delete your listing?
+              </Text>
+              <Text style={styles.additionalText}>
+                Your listing and all its data will completely be lost. You cannot undo this action.
+              </Text>
+              <View style={styles.buttonRow}>
+                <TouchableOpacity onPress={handleClose} style={[styles.buttonNew, { backgroundColor: '#433434' }]}>
+                  <Text style={styles.buttonTextNew}>Cancel</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={handleDeleteListing}>
-                  <Text style={styles.buttonText}>Delete</Text>
+                <TouchableOpacity onPress={() => handleDeleteListing(selectedListing.Company_Name)} style={[styles.buttonNew, { backgroundColor: '#1AB65C' }]}>
+                  <Text style={styles.buttonTextNew}>Yes, Continue</Text>
                 </TouchableOpacity>
               </View>
             </View>
-          </View>
-        ))}
-        <View style={{ height: 50 }} />
-      </ScrollView>
-      {showDeleteConfirmation && (
-        <Animated.View style={[styles.deleteConfirmation, { transform: [{ translateY: slideUpAnimation }] }]}>
-          <View style={styles.popup}>
-            <Text style={styles.popupTitle}>Delete Listing</Text>
-            <View style={styles.line}></View>
-            <Text style={styles.confirmationText}>
-              Are you sure you want to{' '}
-              <Text style={styles.permanentlyText}>permanently</Text>{' '}
-              delete your listing?
-            </Text>
-            <Text style={styles.additionalText}>
-              Your listing and all its data will completely be lost. You cannot undo this action.
-            </Text>
-            <View style={styles.buttonRow}>
-              <TouchableOpacity onPress={handleClose} style={[styles.buttonNew, { backgroundColor: '#433434' }]}>
-                <Text style={styles.buttonTextNew}>Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={handleClose} style={[styles.buttonNew, { backgroundColor: '#1AB65C' }]}>
-                <Text style={styles.buttonTextNew}>Yes, Continue</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </Animated.View>
+          </Animated.View>
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -164,14 +205,16 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#000000',
-    paddingHorizontal: 20,
+    paddingHorizontal: 0,
     paddingTop: 40,
+    width: '100%',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 10,
+    paddingHorizontal: 20,
   },
   backArrow: {
     width: 28,
@@ -186,6 +229,7 @@ const styles = StyleSheet.create({
   scrollContainer: {
     alignItems: 'center',
     marginTop: 20,
+    marginHorizontal: 20,
   },
   listingContainer: {
     width: 310,
@@ -238,21 +282,23 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   deleteConfirmation: {
+    width: 391,
+    height: 281,
     position: 'absolute',
     bottom: 0,
     left: 0,
-    right: 0,
-    height: 281,
-    backgroundColor: 'transparent', // Transparent initially
-    zIndex: 100, // Ensure pop-up appears above other content
+    backgroundColor: 'transparent',
+    zIndex: 100,
   },
   popup: {
-    width: 390,
+    width: '100%',
     height: 281,
+    marginRight: 200,
     backgroundColor: '#0B0B0B',
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 20,
   },
   popupTitle: {
     fontSize: 22,

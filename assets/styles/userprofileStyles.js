@@ -30,7 +30,7 @@ export const styles = StyleSheet.create({
       color: '#FFF',
       fontSize: 24,
       fontFamily: 'Urbanist-Bold',
-      marginTop: 8,
+      marginTop: -10,
     },
     userEmail: {
       color: '#D45A01',
