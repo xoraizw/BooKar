@@ -4,6 +4,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const fs = require('fs');
 const path = require('path');
+require('dotenv').config();
+
 
 const User = require('./User');
 const Company = require('./Company');
@@ -479,7 +481,7 @@ const defaultClient = SibApiV3Sdk.ApiClient.instance;
 
 // Configure API key authorization
 const apiKey = defaultClient.authentications['api-key'];
-apiKey.apiKey = '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'; // Replace with your actual API key
+apiKey.apiKey = process.env.API_KEY; // Replace with your actual API key
 
 const sendVerificationEmail = async (email, verificationCode) => {
   const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
