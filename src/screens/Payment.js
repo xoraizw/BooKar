@@ -7,10 +7,12 @@ import {ToastContainer, toast} from 'react-toastify'
 import Modal from 'react-native-modal';
 import { set } from 'mongoose';
 import { styles } from '../../assets/styles/paymentStyles'
+import { useNavigation } from '@react-navigation/native';
 
-const PaymentScreen = ({navigation, route}) => {
-  const {field, company_email, company_name, user, email_prop, location, contact_name, user_email, booking} = route.params
-  console.log("Booking: ", booking)
+const PaymentScreen = ({route}) => {
+  const {field, company_email, company_name, user, email_prop, location, contact_name, user_email, booking} = route.params;
+  // console.log("Booking: ", booking)
+  const navigation = useNavigation();
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState(null);
@@ -46,7 +48,6 @@ const PaymentScreen = ({navigation, route}) => {
           <Text style={styles.optionText}>Payment Methods</Text>
         </TouchableOpacity>
         <TouchableOpacity>
-    <Text style={styles.addNewCardText}>Add New Card</Text>
 </TouchableOpacity>
       </View>
       <View style={styles.paymentOptions}>
@@ -71,12 +72,12 @@ const PaymentScreen = ({navigation, route}) => {
           <Text style={styles.continueButtonText}>Continue</Text>
         </TouchableOpacity>
       </View>
-      <PaymentSuccessModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+      <PaymentSuccessModal visible={modalVisible} onClose={() => setModalVisible(false)} navigation={navigation} user_email={user_email} />
     </SafeAreaView>
 
   );
 };
-const PaymentSuccessModal = ({ visible, onClose }) => {
+const PaymentSuccessModal = ({ visible, onClose, navigation, user_email }) => {
     return (
         <Modal
             isVisible={visible}
@@ -92,9 +93,8 @@ const PaymentSuccessModal = ({ visible, onClose }) => {
             <Text style={styles.modalTextTitle}>Payment Successful!</Text>
             <TouchableOpacity style={styles.modalButton} onPress={() => {
               navigation.navigate('HomePage', {
-              emailProp: user_email             
-            })}}>
-                <Text style={styles.modalButtonText}>View Bookings</Text>
+              emailProp: user_email})}}>
+                <Text style={styles.modalButtonText}>Return To Home</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
                 <Text style={styles.modalButtonText}>Cancel</Text>

@@ -31,6 +31,8 @@ const ReviewComp = ({ company_name, company_email, current_user }) => {
         if (response.ok) 
         {
           console.log('Review added successfully');
+          setTextInputValue('')
+          setSelectedStar(0)
           // Handle success, navigate to a different screen, etc.
         } 
         else {
@@ -48,6 +50,8 @@ const ReviewComp = ({ company_name, company_email, current_user }) => {
     };
 
     const closeModal = () => {
+        setTextInputValue('')
+        setSelectedStar(0)
         setModalVisible(false);
     };
 
@@ -95,9 +99,9 @@ const ReviewComp = ({ company_name, company_email, current_user }) => {
                                         onPress={() => handleStarPress(index)}
                                     >
                                         <Ionicons
-                                            name={selectedStar >= index + 1 ? 'star' : 'star-outline'}
+                                            name={selectedStar >= index ? 'star' : 'star-outline'}
                                             size={36}
-                                            color={selectedStar >= index + 1 ? '#D45A01' : '#7D7D7D'}
+                                            color={selectedStar >= index ? '#D45A01' : '#7D7D7D'}
                                             style={styles2.starIcon}
                                         />
                                     </TouchableOpacity>

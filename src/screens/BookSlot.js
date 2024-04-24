@@ -32,38 +32,37 @@ const TimePicker = ({ selectedValue, onValueChange, visible, onClose, availableT
 
 const CalendarComponent = ({route, navigation}) => {
   const { fieldChosen, companyEmail, companyName, bookingUser, emailProp, locationProp, contactNameProp, userEmailProp, passedCurrentCompany} = route.params;
-  console.log('Route bookslot:', route); // Log the entire route object
+  // console.log('Route bookslot:', companyName); // Log the entire route object
 
 
   const generateHourlySlots = (checkInTime, checkOutTime) => {
     const startTime = moment(checkInTime, 'YYYY-MM-DD HH:mm');
     const endTime = moment(checkOutTime, 'YYYY-MM-DD HH:mm');
     const timeSlots = [];
-  
+
     // Add the check-in time
     timeSlots.push(startTime.format('YYYY-MM-DD HH:mm'));
-  
-    // Check if the check-out time is on the same day
-    if (endTime.isSame(startTime, 'day')) {
-      let currentHour = startTime.clone().add(1, 'hour');
-      while (currentHour.isBefore(endTime)) {
+
+    let currentHour = startTime.clone().add(1, 'hour');
+
+    // Generate hourly slots until the end of the day
+    while (currentHour.isBefore(moment(startTime).endOf('day'))) {
         timeSlots.push(currentHour.format('YYYY-MM-DD HH:mm'));
         currentHour.add(1, 'hour');
-      }
-    } else {
-      // Check-out time is on the next day
-      let currentHour = startTime.clone().startOf('day').add(1, 'hour');
-      while (currentHour.isBefore(endTime)) {
-        timeSlots.push(currentHour.format('YYYY-MM-DD HH:mm'));
-        currentHour.add(1, 'hour');
-      }
     }
-  
+
+    // If the check-out time is on a different day
+    while (currentHour.isBefore(endTime)) {
+        timeSlots.push(currentHour.format('YYYY-MM-DD HH:mm'));
+        currentHour.add(1, 'hour');
+    }
+
     // Add the check-out time
     timeSlots.push(endTime.format('YYYY-MM-DD HH:mm'));
-  
+
     return timeSlots;
-  };
+};
+
 
   const [loaded] = useFonts({
     UrbanistRegular: require('../../assets/fonts/Urbanist/static/Urbanist-Regular.ttf'),
@@ -146,15 +145,18 @@ const CalendarComponent = ({route, navigation}) => {
   
   const removePastBookings = (momentArray) => {
     const currentDate = moment(); // Current date and time
-    return momentArray.filter(momentStr => moment(momentStr, 'YYYY-MM-DD HH:mm').isAfter(currentDate));
-  };
-
+    return momentArray.filter(momentStr => moment(momentStr, 'YYYY-MM-DD HH:mm').isAfter(currentDate, 'minute'));
+};
 
   
   // Changed!
   useEffect(() => {
     const generatedTimeSlots = generateTimeSlots(fieldChosen.Open_Hours, checkOutTime, removePastBookings(fieldChosen.Already_Booked));
-    setAvailableTimeSlots(generatedTimeSlots.filter(slot => slot > moment().format('HH:mm')));
+    // const generatedTimeSlots = generateTimeSlots(fieldChosen.Open_Hours, checkOutTime, removePastBookings(fieldChosen.Already_Booked));
+    console.log("Generated time slos; ", generatedTimeSlots)
+    // setAvailableTimeSlots(generatedTimeSlots.filter(slot => slot > moment().format('HH:mm')));
+    setAvailableTimeSlots(generatedTimeSlots.filter(slot => moment(slot, 'YYYY-MM-DD HH:mm').isSameOrAfter(moment(), 'minute')));
+
   }, [selectedDate]);
   
   useEffect(() => {
@@ -361,8 +363,9 @@ const ContinueButton = () => {
               console.log('Booking added successfully');
 
               // Update the Already_Booked array in the field document
-              const { Company_Email, Field_Name } = bookingData;
+              const { Company_Email, Field_Name, Company_Name } = bookingData;
               const newArr = generateHourlySlots(checkInTime, checkOutTime);
+              
               for (const slot of newArr) {
                   console.log("slot passed: ", slot)
                   const response = await fetch(`http://${ipAddr}:3000/updatefield`, {
@@ -370,7 +373,7 @@ const ContinueButton = () => {
                       headers: {
                           'Content-Type': 'application/json',
                       },
-                      body: JSON.stringify({ Company_Email, Field_Name, slot }),
+                      body: JSON.stringify({ Company_Email, Company_Name, Field_Name, slot }),
                   });
 
                   if (!response.ok) {

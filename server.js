@@ -416,9 +416,10 @@ app.get('/company-fields-fetch', async (req, res) => {
 
 app.put('/updatefield', async (req, res) => {
   try {
-      const { Company_Email, Field_Name, slot } = req.body;
+      const { Company_Email, Company_Name, Field_Name, slot } = req.body;
+      // console.log("COmpany name: ", Company_Name, " email: ", Company_Email)
       await Field.updateOne(
-          { Company_Email, Field_Name },
+          { Company_Email, Company_Name, Field_Name },
           { $push: { Already_Booked: slot } }
       );
       res.status(200).json({ message: 'Field document updated successfully' });
@@ -428,13 +429,14 @@ app.put('/updatefield', async (req, res) => {
   }
 });
 
+
 app.put('/cancelbooking', async (req, res) => {
   try {
-      const { venueName, bookingTime, userEmail, companyEmail, fieldName } = req.body;
+      const { venueName, bookingTime, userEmail, companyEmail, companyName, fieldName } = req.body;
 
       
       const updatedBooking = await Booking.findOneAndUpdate(
-          { Company_Email: companyEmail, Field_Name: fieldName, Booking_Time: bookingTime, User_Email: userEmail, Canceled: false },
+          { Company_Email: companyEmail, Company_Name: companyName, Field_Name: fieldName, Booking_Time: bookingTime, User_Email: userEmail, Canceled: false },
           { Canceled: true },
           { new: true }
       );
@@ -451,18 +453,19 @@ app.put('/cancelbooking', async (req, res) => {
 
 app.put('/updatebookings', async (req, res) => {
   try {
-      const { companyEmail, fieldName, deleteBookings } = req.body;
+      const { companyEmail, companyName, fieldName, deleteBookings } = req.body;
 
+      console.log("email: ", companyEmail, " name: ", companyName, " field: ", fieldName)
       // console.log("deleteBookings: ", deleteBookings)
       // Find the field using Field_Name and Company_Email
-      const field = await Field.findOne({ Company_Email: companyEmail, Field_Name: fieldName });
+      const field = await Field.findOne({ Company_Email: companyEmail, Company_Name: companyName, Field_Name: fieldName });
 
       if (!field) {
           throw new Error('Field not found');
       }
 
       field.Already_Booked = field.Already_Booked.filter(item => !deleteBookings.includes(item));
-      // console.log("new booked array: ", field.Already_Booked)
+      console.log("new booked array: ", field.Already_Booked)
       
       // Save the updated field document
       await field.save();

@@ -29,22 +29,24 @@ const MyBookings = ({ route, navigation }) => {
     const [selectedPrice, setSelectedPrice] = useState(0);
     const [selectedUserEmail, setSelectedUserEmail] = useState("");
     const [selectedCompanyEmail, setSelectedCompanyEmail] = useState("");
+    const [selectedCompanyName, setSelectedCompanyName] = useState("");
     const [selectedFieldName, setSelectedFieldName] = useState("");
 
-    const CancelButton = ({ venueName, bookingTime, useremail, companyemail, fieldname, price}) => (
+    const CancelButton = ({ venueName, bookingTime, useremail, companyemail, fieldname, price, companyname}) => (
       <TouchableOpacity
       style={styles.cancelButton}
-      onPress={() => showConfirmationModal(venueName, bookingTime, useremail, companyemail, fieldname, price)}
+      onPress={() => showConfirmationModal(venueName, bookingTime, useremail, companyemail, fieldname, price, companyname)}
       >
       <Text style={styles.cancelButtonText}>Cancel Booking</Text>
       </TouchableOpacity>
   );
   
-  const showConfirmationModal = (venueName, bookingTime, useremail, companyemail, fieldname, price) => {
+  const showConfirmationModal = (venueName, bookingTime, useremail, companyemail, fieldname, price, companyname) => {
     setSelectedVenue(venueName);
     setSelectedBooking(bookingTime)
     setSelectedUserEmail(useremail)
     setSelectedCompanyEmail(companyemail)
+    setSelectedCompanyName(companyname)
     setSelectedFieldName(fieldname)
     setSelectedPrice(price)
     setModalVisible(true);
@@ -178,7 +180,8 @@ const MyBookings = ({ route, navigation }) => {
       // Handle error, display an error message, etc.
     }
   };
-  const cancelBooking = async (venueName, bookingTime, userEmail, companyEmail, fieldName, price) => {
+  const cancelBooking = async (venueName, bookingTime, userEmail, companyEmail, companyName, fieldName, price) => {
+    console.log("venue name, ", venueName, " ", fieldName)
     let msg = `
         Booking Canceled! \n 
         Booking venue: ${fieldName} - ${venueName}\n 
@@ -191,11 +194,7 @@ const MyBookings = ({ route, navigation }) => {
     Toast.show({
       type: 'success',
       text1: `
-      Booking Canceled! \n 
-      Booking venue: ${fieldName} - ${venueName}\n 
-      Booking Time: ${bookingTime}.\n 
-      Payment: ${price} \n
-      80% of the money will be refunded within 48-hours.`
+      Booking Canceled!`
     });
     try {
         const response = await fetch(`http://${ipAddr}:3000/cancelbooking`, {
@@ -203,7 +202,7 @@ const MyBookings = ({ route, navigation }) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ venueName, bookingTime, userEmail, companyEmail, fieldName }),
+            body: JSON.stringify({ venueName, bookingTime, userEmail, companyEmail, companyName, fieldName }),
         });
 
         if (!response.ok) {
@@ -233,14 +232,15 @@ const MyBookings = ({ route, navigation }) => {
           console.error('Error fetching bookings:', error);
       }
   };
-  const modifyBookedArray = async (companyEmail, fieldName, deleteBookings) => {
+  const modifyBookedArray = async (companyEmail, companyName, fieldName, deleteBookings) => {
+    console.log(companyEmail, companyName, fieldName, deleteBookings)
   try {
       const response = await fetch(`http://${ipAddr}:3000/updatebookings`, {
           method: 'PUT',
           headers: {
               'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ companyEmail, fieldName, deleteBookings}),
+          body: JSON.stringify({ companyEmail, companyName, fieldName, deleteBookings}),
       });
 
       if (!response.ok) {
@@ -306,7 +306,7 @@ const MyBookings = ({ route, navigation }) => {
     }
     else if (selectedCategory === "UpComing")
     {
-      return UpcomingBookings({ venueName, bookingTime, cancelled, useremail, companyemail, fieldname })
+      return UpcomingBookings({ venueName, bookingTime, cancelled, useremail, companyemail, fieldname, companyname })
     }
     else 
     {
@@ -376,7 +376,7 @@ const MyBookings = ({ route, navigation }) => {
               (
                 <View style={styles.tagContainer}>
                     <Text style={styles.tagText}>Upcoming</Text>
-                    <CancelButton venueName={venueName} bookingTime={bookingTime} useremail ={useremail} companyemail={companyemail} fieldname={fieldname} price={price}/>
+                    <CancelButton venueName={venueName} bookingTime={bookingTime} useremail ={useremail} companyemail={companyemail} companyname={companyname} fieldname={fieldname} price={price}/>
                 </View>
               )
             }
@@ -415,7 +415,7 @@ const MyBookings = ({ route, navigation }) => {
       );
       else return (<></>)
   };
-  const UpcomingBookings = ({ venueName, bookingTime, cancelled, useremail, companyemail, fieldname }) => {
+  const UpcomingBookings = ({ venueName, bookingTime, cancelled, useremail, companyemail, fieldname, companyname }) => {
     if (!cancelled && checkEventStatus(bookingTime) === "Not Started") return (
         <View style={styles.card}>
             <View style={styles.row}>
@@ -430,7 +430,7 @@ const MyBookings = ({ route, navigation }) => {
             </View>
             <View style={styles.tagContainer}>
                 <Text style={styles.tagText}>Upcoming</Text>
-                <CancelButton venueName={venueName} bookingTime={bookingTime} useremail ={useremail} companyemail={companyemail} fieldname={fieldname}/>
+                <CancelButton venueName={venueName} bookingTime={bookingTime} useremail ={useremail} companyemail={companyemail} fieldname={fieldname} companyname={companyname}/>
             </View>
         </View>
     );
@@ -538,8 +538,8 @@ const MyBookings = ({ route, navigation }) => {
                           <TouchableOpacity
                               onPress={() => {
                                 hideConfirmationModal()
-                                cancelBooking(selectedVenue, selectedBooking, selectedUserEmail, selectedCompanyEmail, selectedFieldName, selectedPrice)                                
-                                modifyBookedArray(selectedCompanyEmail, selectedFieldName, generateHourlySlots(selectedBooking))
+                                cancelBooking(selectedVenue, selectedBooking, selectedUserEmail, selectedCompanyEmail, selectedCompanyName, selectedFieldName, selectedPrice)                                
+                                modifyBookedArray(selectedCompanyEmail, selectedCompanyName, selectedFieldName, generateHourlySlots(selectedBooking))
                                 fetchMyBookings()
                               }}
                               style={styles.modalConfirmButton}
