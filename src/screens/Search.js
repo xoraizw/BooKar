@@ -109,10 +109,11 @@ const SearchScreen = ({ route, navigation }) => {
   
     const handleArenaCardPress = () => {
         navigation.navigate('FieldProfile', {
-          currcompany: item,
+          currcompany: { ...item, Image: '' },
           user_email: emailPassed,    
-          currentUser: currentUser                  
+          currentUser: currentUser                
       })
+      
     };
     const findLowestHourlyRate = (array) => {
       // If the array is empty, return 2000

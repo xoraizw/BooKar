@@ -38,7 +38,6 @@ export default function HomePage({ route, navigation }) {
   
   const handlePillPress = (pill) => {
     setSelectedPill(pill);
-    setCompanies([...companies.reverse()]);
   };
 
   const fetchMyBookings = async () => {
@@ -134,7 +133,7 @@ export default function HomePage({ route, navigation }) {
           <View style={styles.header}>
             <View style={styles.logoContainer}>
               <Image source={require('../../assets/images/Logo.png')} style={styles.logo} />
-              <Text style={styles.logoText}>BooKar</Text>
+              <Text style={styles.logoText}>BookKar</Text>
             </View>
             <TouchableOpacity onPress={() => {
               // handleTabPress('Notifications');
@@ -206,8 +205,11 @@ export default function HomePage({ route, navigation }) {
             if (company.Image && company.Image.data) {
             // Convert Buffer object to base64-encoded string
             const base64Image = Buffer.from(company.Image.data).toString('base64');
-
+            
             // Use base64-encoded string as the URI for Image component
+            let tempComp = { ...company, Image: '' }
+            {/* console.log('Company:', company); */}
+            console.log('Temp Company:', tempComp);
             return (
               <ImageBox
                 key={company._id}
@@ -219,7 +221,7 @@ export default function HomePage({ route, navigation }) {
                 navigation={navigation} 
                 onPress={() => {
                   navigation.navigate('FieldProfile', {
-                    currcompany: company,
+                    currcompany: { ...company, Image: '' }, // Create a new object without the Image attribute
                     user_email: emailProp,    
                     currentUser: user                  
                   });
@@ -258,9 +260,9 @@ export default function HomePage({ route, navigation }) {
                 
                 onPress={() => {
                  navigation.navigate('FieldProfile', {
-                      currcompany: company,
-                      email: emailProp,    
-                      currentUser: user                  
+                    currcompany: { ...company, Image: '' }, // Create a new object without the Image attribute
+                    user_email: emailProp,    
+                    currentUser: user                   
                   });}}
                   />
             );

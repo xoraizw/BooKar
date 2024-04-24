@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { styles2 } from '../../assets/styles/fieldprofileStyles';
 import {ipAddr} from './ipconfig';
 
-const CompanyProfile = ({ companyName, imageUrl, location, images, moreDetails, descriptionText, facilityIcons, facilityTexts, mapImage, reviewRating, reviewName, reviewDate, reviewContent, reviewPicture,companyEmail}) => {
+const CompanyProfile = ({ companyName,  location, images, moreDetails, descriptionText, facilityIcons, facilityTexts, mapImage, reviewRating, reviewName, reviewDate, reviewContent, reviewPicture,companyEmail}) => {
   const [loaded] = useFonts({
     UrbanistRegular: require('../../assets/fonts/Urbanist/static/Urbanist-Regular.ttf'),
     UrbanistBold: require('../../assets/fonts/Urbanist/static/Urbanist-SemiBold.ttf'),
@@ -68,7 +68,7 @@ const CompanyProfile = ({ companyName, imageUrl, location, images, moreDetails, 
     <ScrollView contentContainerStyle={styles2.scrollView}>
       <View style={[styles2.container, { backgroundColor: '#00170C' }]}>
         <Image
-          source={imageUrl}
+          source={require('../../assets/images/image_2.png')}
           style={styles2.image}
         />
         <View style={styles2.textContainer}>
@@ -201,7 +201,7 @@ const CompanyProfilesScreen = ({route, navigation}) => {
     require ('../../assets/images/meeting_room.png'),
     require('../../assets/images/restaurant.png'),
     require('../../assets/images/parking.png'),
-    require('../../assets/images/airconditioning.png'),
+    require('../../assets/images/AC.png'),
     require('../../assets/images/basketball.png'),
   ];
 
@@ -219,21 +219,21 @@ const CompanyProfilesScreen = ({route, navigation}) => {
   ];
 
   const servicesMap = {
-    'Tennis': require('../../assets/images/tennis1.png'),
-    'Swimming': require('../../assets/images/swimming1.png'),
+    'Tennis': require('../../assets/images/Tennis Racquet.png'),
+    'Swimming': require('../../assets/images/Swimming (1).png'),
     'Cricket' : require('../../assets/images/cricket.png'),
     'Basketball' : require('../../assets/images/basketball.png'),
     'Gaming' : require('../../assets/images/gaming.png'),
     'Football' : require('../../assets/images/football.png'),
-    'Badminton' : require('../../assets/images/badminton1.png'),
-    'Volleyball' : require('../../assets/images/volleyball1.png'),
-    'Snooker':require('../../assets/images/8ball.png'),
-    'Golf':require('../../assets/images/golf1.png'),
-    'Squash':require('../../assets/images/squash.png'),
-    'Horse Riding': require('../../assets/images/horse1.png'),
-    'Bowling':require('../../assets/images/bowling.png'), 
-    'Gun Range': require('../../assets/images/target1.png'),
-    'Gym':require('../../assets/images/gym1.png'),
+    'Badminton' : require('../../assets/images/Shuttlecock.png'),
+    'Volleyball' : require('../../assets/images/Volleyball.png'),
+    'Snooker':require('../../assets/images/Circled 8.png'),
+    'Golf':require('../../assets/images/Golf.png'),
+    'Squash':require('../../assets/images/Racquetball.png'),
+    'Horse Riding': require('../../assets/images/Trotting Horse.png'),
+    'Bowling':require('../../assets/images/Bowling Pins.png'), 
+    'Gun Range': require('../../assets/images/Target.png'),
+    'Gym':require('../../assets/images/Gym.png'),
   }
 
   const servicesArray = Object.keys(servicesMap).map(key => ({
@@ -382,7 +382,7 @@ const CompanyProfilesScreen = ({route, navigation}) => {
   const handleStarPress = (index) => {
     setSelectedStar(index + 1);
   };
-  const base64Image = Buffer.from(currcompany.Image.data).toString('base64');
+  // const base64Image = Buffer.from(currcompany.Image.data).toString('base64');
 
   return (
     <>
@@ -404,7 +404,6 @@ const CompanyProfilesScreen = ({route, navigation}) => {
         
         <CompanyProfile
           companyName={currcompany.Company_Name}
-          imageUrl={base64Image ? { uri: `data:image/png;base64,${base64Image}` } : require('../../assets/images/image_2.png')}
           location={currcompany.Location}
           images={images}
           moreDetails={filteredServicesArray}
