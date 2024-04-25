@@ -82,7 +82,7 @@ export const styles2 = StyleSheet.create({
     imageContainer: {
       flexDirection: 'row',
       marginTop: 15,
-      marginBottom: 20,
+      marginBottom: 0,
       paddingHorizontal: 5,
       height: 115,
     },
@@ -138,7 +138,7 @@ export const styles2 = StyleSheet.create({
       color: '#C4C4C4',
     },
     descriptionContainer: {
-      marginTop: 20,
+      marginTop: 40,
       width: '100%',
       // marginBottom: 10,
     },
@@ -256,7 +256,7 @@ export const styles2 = StyleSheet.create({
     seeAllText: {
       fontFamily: 'UrbanistBold',
       fontSize: 16,
-      color: '#D45A01',
+      color: '#00170C',
     },
     reviewRating: {
       fontFamily: 'UrbanistSemiBold',
@@ -355,13 +355,21 @@ export const styles2 = StyleSheet.create({
       width: 28,
       height: 28,
       marginRight: 10,
-      marginTop:45,
+      marginTop:75,
     },
     companyNameTop: {
       fontFamily: 'UrbanistBold',
       fontSize: 24,
       color: '#C4C4C4',
       marginTop:45,
+      marginLeft: 10,
+    },
+    galleryText2: {
+      fontFamily: 'UrbanistBold',
+      fontSize: 19,
+      color: '#C4C4C4',
+      textAlign: 'left',
+      marginBottom: 20,
     },
     modalContainer: {
       flex: 1,

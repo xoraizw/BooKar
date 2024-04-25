@@ -83,7 +83,6 @@ const CompanyProfile = ({ companyName,  location, images, moreDetails, descripti
           </View>
           <View style={styles2.galleryContainer}>
             <Text style={styles2.galleryText}>Gallery Photos</Text>
-            <Text style={styles2.seeAllText}>See All</Text>
           </View>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles2.imageContainer}>
             {images.map((image, index) => (
@@ -102,6 +101,9 @@ const CompanyProfile = ({ companyName,  location, images, moreDetails, descripti
             </View>
           </Modal>
 
+          <View style={styles2.galleryContainer}>
+            <Text style={styles2.galleryText2}>Services</Text>
+          </View>
           <View style={styles2.moreDetailsContainer}>
             {moreDetails.map((detail, index) => (
               <View key={index} style={styles2.detailItem}>
@@ -117,7 +119,7 @@ const CompanyProfile = ({ companyName,  location, images, moreDetails, descripti
             </View>
             {(
               <TouchableOpacity onPress={toggleDescription} style={styles2.readMoreButton}>
-                <Text style={styles2.readMoreButtonText}>{expanded ? 'Read Less' : 'Read More'}</Text>
+                <Text style={styles2.readMoreButtonText}>{expanded ?  'Read More' : 'Read Less' }</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -386,12 +388,11 @@ const CompanyProfilesScreen = ({route, navigation}) => {
 
   return (
     <>
-      <Animated.View style={[styles2.topScreen, { opacity: fadeAnim }]}>
+     <Animated.View style={[styles2.topScreen, { opacity: fadeAnim }]}>
         <TouchableOpacity onPress={handleBackButtonPress}>
           <Image
+            style={[styles2.backArrow, { marginTop: 50, marginLeft: -5 }]}
             source={require('../../assets/images/white_back_arrow.png')}
-            style={styles2.backArrow}
-            resizeMode="contain"
           />
         </TouchableOpacity>
         <Text style={styles2.companyNameTop}>{currcompany.Company_Name}</Text>

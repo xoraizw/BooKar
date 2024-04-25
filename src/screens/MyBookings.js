@@ -89,7 +89,7 @@ const MyBookings = ({ route, navigation }) => {
     return (
       <View style={styles.navbar}>
           <TouchableOpacity
-            style={selectedTab === 'home' ? styles.navbarTabSelected : styles.navbarTab}
+            style={styles.navbarTab}
             onPress={() => {handleTabPress('home');
             navigation.navigate('HomePage');
             navigation.navigate('HomePage', {
@@ -135,7 +135,7 @@ const MyBookings = ({ route, navigation }) => {
             <Text style={styles.navbarText}>Bookings</Text>
           </TouchableOpacity>
           <TouchableOpacity
-          style={selectedTab === 'person' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress={() => {
             handleTabPress('person');
             // navigation.navigate('UserProfile');
@@ -146,7 +146,7 @@ const MyBookings = ({ route, navigation }) => {
           }}
         >
           <Ionicons
-            name={selectedTab === 'person' ? 'person' : 'person-outline'}
+            name={'person'}
             size={24}
             color={'#7D7D7D'}
           />
@@ -430,7 +430,7 @@ const MyBookings = ({ route, navigation }) => {
             </View>
             <View style={styles.tagContainer}>
                 <Text style={styles.tagText}>Upcoming</Text>
-                <CancelButton venueName={venueName} bookingTime={bookingTime} useremail ={useremail} companyemail={companyemail} fieldname={fieldname} companyname={companyname}/>
+                <CancelButton venueName={venueName} bookingTime={bookingTime} useremail = {useremail} companyemail={companyemail} fieldname={fieldname} companyname={companyname}/>
             </View>
         </View>
     );
@@ -483,7 +483,7 @@ const MyBookings = ({ route, navigation }) => {
               />
               <Text style={styles.headerTitle}>My Bookings</Text>
           </View>
-          <ScrollView horizontal contentContainerStyle={styles.scrollViewContainer}>
+          <ScrollView horizontal>
             <View style={styles.pillContainer}>
               <PillButton text="All" isSelected={selectedCategory === 'All'} onPress={() => setSelectedCategory('All')} />
               <PillButton text="Ongoing" isSelected={selectedCategory === 'Ongoing'} onPress={() => setSelectedCategory('Ongoing')} />
@@ -511,6 +511,7 @@ const MyBookings = ({ route, navigation }) => {
               keyExtractor={item => item.id}
               contentContainerStyle={styles.bookingsListContainer}
           />
+          <View style={{ height: 40 }} />
           <Modal
               animationType="slide"
               transparent={true}
@@ -556,3 +557,5 @@ const MyBookings = ({ route, navigation }) => {
 };
 
 export default MyBookings;
+
+

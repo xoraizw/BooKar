@@ -101,10 +101,6 @@ export const styles = StyleSheet.create({
     color: '#C4C4C4',
     fontFamily: 'Urbanist',
     fontSize: 17,
-    marginBottom: -300, // We'll adjust this in layout, not here.
-    // marginBottom: 1, // We'll adjust this in layout, not here.
-    marginRight: 70,
-    marginLeft :-15, // Add some space between the options
   },
 
   addNewCardText: {
@@ -122,6 +118,7 @@ export const styles = StyleSheet.create({
     fontFamily: 'Urbanist',
     fontSize: 17,
     paddingRight: 20,
+    paddingHorizontal: 20
 },
 addNewCardButton: {
     backgroundColor: '#D45A01', // Change this to the color of your 'Payment Methods' button
@@ -201,5 +198,4 @@ header: {
   },
 
 
-  // ... (add any additional styles here)
 });

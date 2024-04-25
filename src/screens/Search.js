@@ -196,7 +196,7 @@ const SearchScreen = ({ route, navigation }) => {
       {/* Navbar */}
       <View style={styles.navbar}>
         <TouchableOpacity
-          style={selectedTab === 'home' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress= {() => {
             handleTabPress('home');
             navigation.navigate('HomePage', {
@@ -212,18 +212,18 @@ const SearchScreen = ({ route, navigation }) => {
           <Text style={styles.navbarText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={selectedTab === 'search' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress={() => handleTabPress('search')}
         >
           <Ionicons
-            name={selectedTab === 'search' ? 'search' : 'search-outline'}
+            name={'search'}
             size={24}
             color={'#D45A01'}
           />
           <Text style={styles.navbarText}>Search</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={selectedTab === 'list' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress={() => {
             handleTabPress('list');
             // navigation.navigate('UserProfile');
@@ -233,14 +233,14 @@ const SearchScreen = ({ route, navigation }) => {
             })}} // Navigate to the Search page
         >
           <Ionicons
-            name={selectedTab === 'list' ? 'list' : 'list-outline'}
+            name={'list'}
             size={24}
             color={'#7D7D7D'}
           />
           <Text style={styles.navbarText}>Bookings</Text>
         </TouchableOpacity>
         <TouchableOpacity
-          style={selectedTab === 'person' ? styles.navbarTabSelected : styles.navbarTab}
+          style={styles.navbarTab}
           onPress={() => {
             handleTabPress('person');
             // navigation.navigate('UserProfile');
@@ -251,7 +251,7 @@ const SearchScreen = ({ route, navigation }) => {
           }}
         >
           <Ionicons
-            name={selectedTab === 'person' ? 'person' : 'person-outline'}
+            name={'person'}
             size={24}
             color={'#7D7D7D'}
           />

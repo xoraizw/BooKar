@@ -60,9 +60,7 @@ export const styles = StyleSheet.create({
       justifyContent: 'center',
       paddingVertical: 8,
       marginBottom: 16,
-    },
-    scrollViewContainer: {
-      paddingHorizontal: 8, // Add some padding to the sides of the content
+      height : 55,
     },
     pill: {
       // General pill styles

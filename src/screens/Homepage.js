@@ -200,7 +200,7 @@ export default function HomePage({ route, navigation }) {
               onPress={() => handlePillPress('Book Again')}
             />
           </ScrollView>
-          <ScrollView horizontal contentContainerStyle={[styles.imageContainer, { width: companies.length * (266 + 21) } ]}>
+          <ScrollView horizontal contentContainerStyle={[styles.imageContainer, { width: companies.length * (266 + 21)* 1.05  } ]}>
           {companies.map(company => {
             if (company.Image && company.Image.data) {
             // Convert Buffer object to base64-encoded string

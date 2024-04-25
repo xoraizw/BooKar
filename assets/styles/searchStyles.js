@@ -137,7 +137,7 @@ export const styles = StyleSheet.create({
       flexDirection: 'row',
       justifyContent: 'space-around',
       alignItems: 'center',
-      width: '106%',
+      width: '105.5%',
       height: '9%',
       backgroundColor: '#00170C',
       position: 'absolute',

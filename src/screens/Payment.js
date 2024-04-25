@@ -39,10 +39,10 @@ const PaymentScreen = ({route}) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
       <TouchableOpacity onPress={() => navigation.goBack()}>
-      <Ionicons name="arrow-back" size={24} color="#C4C4C4" />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Payment</Text>
-            </View>
+      <Ionicons name="arrow-back" size={24} color="#C4C4C4"/>
+        </TouchableOpacity>
+          <Text style={styles.headerTitle}>Payment</Text>
+        </View>
       <View style={styles.optionsContainer}>
         <TouchableOpacity onPress={handlePaymentMethodsPress}>
           <Text style={styles.optionText}>Payment Methods</Text>

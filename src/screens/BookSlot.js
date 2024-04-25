@@ -43,15 +43,8 @@ const CalendarComponent = ({route, navigation}) => {
     // Add the check-in time
     timeSlots.push(startTime.format('YYYY-MM-DD HH:mm'));
 
+    // Generate hourly slots until the check-out time
     let currentHour = startTime.clone().add(1, 'hour');
-
-    // Generate hourly slots until the end of the day
-    while (currentHour.isBefore(moment(startTime).endOf('day'))) {
-        timeSlots.push(currentHour.format('YYYY-MM-DD HH:mm'));
-        currentHour.add(1, 'hour');
-    }
-
-    // If the check-out time is on a different day
     while (currentHour.isBefore(endTime)) {
         timeSlots.push(currentHour.format('YYYY-MM-DD HH:mm'));
         currentHour.add(1, 'hour');
