@@ -35,7 +35,7 @@ const CalendarComponent = ({route, navigation}) => {
   // console.log('Route bookslot:', companyName); // Log the entire route object
 
 
-  const generateHourlySlots = (checkInTime, checkOutTime) => {
+const generateHourlySlots = (checkInTime, checkOutTime) => {
     const startTime = moment(checkInTime, 'YYYY-MM-DD HH:mm');
     const endTime = moment(checkOutTime, 'YYYY-MM-DD HH:mm');
     const timeSlots = [];
